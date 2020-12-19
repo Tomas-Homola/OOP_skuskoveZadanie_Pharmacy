@@ -28,6 +28,6 @@ private:
 private slots:
 
     void on_pushButton_SignInWindow_clicked();
-    void on_pushButton_SignIn_clicked();
+    void on_pushButton_SignInConfirm_clicked();
 
 };
