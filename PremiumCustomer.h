@@ -2,7 +2,7 @@
 
 #include "Customer.h"
 
-class PremiumCustomer : protected Customer
+class PremiumCustomer : public Customer
 {
 private:
 	int discount = -1;

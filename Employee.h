@@ -2,7 +2,7 @@
 
 #include "User.h"
 
-class Employee : protected User
+class Employee : public User
 {
 private:
 	QString position = "";

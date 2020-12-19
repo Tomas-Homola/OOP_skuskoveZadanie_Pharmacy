@@ -2,7 +2,7 @@
 
 #include "User.h"
 
-class Customer : protected User
+class Customer : public User
 {
 private:
 	QString name = "";
