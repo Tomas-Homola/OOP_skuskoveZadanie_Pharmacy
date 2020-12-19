@@ -1,15 +1,21 @@
 #pragma once
 
-#include "User.h"
-
-class Admin : protected User
+class Admin
 {
 private:
-
+	QString login = "admin";
+	QString password = "";
+	bool isAdmin = true;
 
 public:
-	Admin() : User() {}
-	Admin(QString login, QString password) : User(login, password, true) {};
+	Admin() {};
+	Admin(QString password) { this->login = "admin"; this->password = password; this->isAdmin = true; }
+
+	QString getLogin() { return login; }
+	QString getPassword() { return password; }
+	bool isUserAdmin() { return isAdmin; }
+
+	void setPassword(QString newPassword) { password = newPassword; }
 
 	QString whoAmI() { return "Admin"; }
 
