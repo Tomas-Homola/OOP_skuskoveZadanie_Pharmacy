@@ -99,11 +99,27 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
 
 }
 
+// ukoncenie programu
+void Pharmacy::closeEvent(QCloseEvent* event)
+{
+    if (QMessageBox::Yes == QMessageBox::question(this, "Close confirmation", "Are you sure you want to exit?", QMessageBox::Yes | QMessageBox::No))
+    {
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
+    }
+}
+
 void Pharmacy::on_actionsave_users_triggered()
 {
     saveUsers();
 }
 
+
+
+// groupBox_Main
 void Pharmacy::on_pushButton_SignInWindow_clicked()
 {
     // groupBox_Main
@@ -142,6 +158,7 @@ void Pharmacy::on_pushButton_PrintUsers_clicked()
         qDebug() << employees[i].getPosition() << employees[i].getLogin() << employees[i].getPassword();
 }
 
+// groupBox_SignIn
 void Pharmacy::on_pushButton_SignInConfirm_clicked()
 {
     QString password = ui.lineEdit_Password->text(); // temporary string pre ulozenie zadaneho hesla
@@ -158,7 +175,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
         msgBox.exec();
 
         // groupBox_main
-        ui.label_SignedInAs->setText("Signed in as:" + admin.getLogin());
+        ui.label_SignedInAs->setText("Signed in as: " + admin.getLogin());
         ui.pushButton_SignInWindow->setVisible(false);
         ui.pushButton_SignOut->setVisible(true);
 
@@ -178,44 +195,32 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
 
 }
 
-// tu si pozriet, ako sa vytvaraju nove dialogove okienka a cez ne spravit pridavanie uzivatelov / zmenu ich udajov
+void Pharmacy::on_checkBox_ShowPassword_clicked()
+{
+    if (!showPassword)
+    {
+        ui.lineEdit_Password->setEchoMode(QLineEdit::Normal);
+        showPassword = true;
+    }
+    else if (showPassword)
+    {
+        ui.lineEdit_Password->setEchoMode(QLineEdit::Password);
+        showPassword = false;
+    }
+}
+
+// groupBox_AdminStuff
 void Pharmacy::on_pushButton_AddCustomer_clicked()
 {
-    QString name = ui.lineEdit->text();
-    QString surname = ui.lineEdit_4->text();
-    QString adress = ui.lineEdit_5->text();
-    QString login = ui.lineEdit_6->text();
-    QString password = ui.lineEdit_7->text();
-    password = QCryptographicHash::hash(password.toStdString().c_str(), QCryptographicHash::Sha1).toHex();
-
-    customers.push_back(Customer(name, surname, adress, login, password));
-
-    ui.comboBox_users->addItem(login);
+    
 }
 
 void Pharmacy::on_pushButton_AddPremiumCustomer_clicked()
 {
-    QString name = ui.lineEdit_2->text();
-    QString surname = ui.lineEdit_8->text();
-    QString adress = ui.lineEdit_9->text();
-    QString login = ui.lineEdit_10->text();
-    QString password = ui.lineEdit_11->text();
-    password = QCryptographicHash::hash(password.toStdString().c_str(), QCryptographicHash::Sha1).toHex();
-    int discount = ui.spinBox->value();
-
-    premiumCustomers.push_back(PremiumCustomer(name, surname, adress, discount, login, password));
-
-    ui.comboBox_users->addItem(login);
+    
 }
 
 void Pharmacy::on_pushButton_AddEmployee_clicked()
 {
-    QString position = ui.lineEdit_3->text();
-    QString login = ui.lineEdit_12->text();
-    QString password = ui.lineEdit_13->text();
-    password = QCryptographicHash::hash(password.toStdString().c_str(), QCryptographicHash::Sha1).toHex();
-
-    employees.push_back(Employee(login, password, position));
-
-    ui.comboBox_users->addItem(login);
+    
 }

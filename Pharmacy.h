@@ -17,6 +17,8 @@ public:
 private:
     Ui::PharmacyClass ui;
 
+    bool showPassword = false;
+
     QMessageBox msgBox;
 
     QVector<Customer> customers;
@@ -29,6 +31,8 @@ private:
     bool saveUsers();
 
 private slots:
+    
+    void closeEvent(QCloseEvent* event);
 
     void on_actionsave_users_triggered();
 
@@ -37,8 +41,9 @@ private slots:
     void on_pushButton_SignOut_clicked();
     void on_pushButton_PrintUsers_clicked();
     
-    // groupBox_Login
+    // groupBox_SignIn
     void on_pushButton_SignInConfirm_clicked();
+    void on_checkBox_ShowPassword_clicked();
 
     // groupBox_AdminStuff
     void on_pushButton_AddCustomer_clicked();
