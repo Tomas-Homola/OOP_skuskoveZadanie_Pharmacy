@@ -9,7 +9,7 @@ private:
 
 public:
 	Employee() : User() {}
-	Employee(QString login, QString password, QString position) : User(login, password, false) { this->position = position; }
+	Employee(QString position, QString login, QString password) : User(login, password, false) { this->position = position; }
 
 	QString getPosition() { return position; }
 
