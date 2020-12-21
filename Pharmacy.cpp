@@ -43,33 +43,42 @@ bool Pharmacy::saveUsers()
     QFile premiumCustomersFile("_usersData/premiumCustomers.txt");
     QFile employeesFile("_usersData/employees.txt");
 
-    if (!adminFile.open(QIODevice::WriteOnly | QIODevice::Text) && !customersFile.open(QIODevice::WriteOnly | QIODevice::Text) && !premiumCustomersFile.open(QIODevice::WriteOnly | QIODevice::Text) && !employeesFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    bool isOpenedAdminFile = adminFile.open(QIODevice::WriteOnly | QIODevice::Text);
+    bool isOpenedCustomersFile = customersFile.open(QIODevice::WriteOnly | QIODevice::Text);
+    bool isOpenedPremiumCustomersFile = premiumCustomersFile.open(QIODevice::WriteOnly | QIODevice::Text);
+    bool isOpenedEmployeesFile = employeesFile.open(QIODevice::WriteOnly | QIODevice::Text);
+
+    if (!isOpenedAdminFile && !isOpenedCustomersFile && !isOpenedPremiumCustomersFile && !isOpenedEmployeesFile)
     {
         qDebug() << "Files not opened";
         return false;
     }
     else
     {
+        // zapis admina
         QTextStream out1(&adminFile);
 
         out1 << admin.getPassword();
 
+        // zapis Customers
         QTextStream out2(&customersFile);
         for (int i = 0; i < customers.size(); i++)
         {
-            out2 << customers[i].getName() << "\n" << customers[i].getSurname() << "\n" << customers[i].getAdress() << "\n" << customers[i].getLogin() << "\n" << customers[i].getPassword();
+            out2 << customers[i].getName() << "\n" << customers[i].getSurname() << "\n" << customers[i].getAdress() << "\n" << customers[i].getLogin() << "\n" << customers[i].getPassword() << "\n";
         }
 
+        // zapis Premium Customers
         QTextStream out3(&premiumCustomersFile);
         for (int i = 0; i < premiumCustomers.size(); i++)
         {
-            out3 << premiumCustomers[i].getName() << "\n" << premiumCustomers[i].getSurname() << "\n" << premiumCustomers[i].getAdress() << "\n" << premiumCustomers[i].getDiscount() << "\n" << premiumCustomers[i].getLogin() << "\n" << premiumCustomers[i].getPassword();
+            out3 << premiumCustomers[i].getName() << "\n" << premiumCustomers[i].getSurname() << "\n" << premiumCustomers[i].getAdress() << "\n" << premiumCustomers[i].getDiscount() << "\n" << premiumCustomers[i].getLogin() << "\n" << premiumCustomers[i].getPassword() << "\n";
         }
 
+        // zapis Employees
         QTextStream out4(&employeesFile);
         for (int i = 0; i < employees.size(); i++)
         {
-            out4 << employees[i].getPosition() << "\n" << employees[i].getLogin() << "\n" << employees[i].getPassword();
+            out4 << employees[i].getPosition() << "\n" << employees[i].getLogin() << "\n" << employees[i].getPassword() << "\n";
         }
 
         adminFile.close();
@@ -114,7 +123,10 @@ void Pharmacy::closeEvent(QCloseEvent* event)
 
 void Pharmacy::on_actionsave_users_triggered()
 {
-    saveUsers();
+    if (saveUsers())
+        qDebug() << "Users saved";
+    else
+        qDebug() << "Error with users saving";
 }
 
 
@@ -212,7 +224,23 @@ void Pharmacy::on_checkBox_ShowPassword_clicked()
 // groupBox_AdminStuff
 void Pharmacy::on_pushButton_AddCustomer_clicked()
 {
-    
+    addCustomerDialog = new AddCustomerDialog(this);
+    connect(addCustomerDialog, SIGNAL(accepted()), this, SLOT(addCustomerAccepted()));
+    addCustomerDialog->exec();
+}
+
+void Pharmacy::addCustomerAccepted()
+{
+    AddCustomerDialog* addCustomerDialog = static_cast<AddCustomerDialog*>(sender());
+
+    QString name = addCustomerDialog->getName();
+    QString surname = addCustomerDialog->getSurname();
+    QString adress = addCustomerDialog->getAdress();
+    QString login = addCustomerDialog->getLogin();
+    QString password = addCustomerDialog->getPassword();
+
+    customers.push_back(Customer(name, surname, adress, login, password));
+    ui.comboBox_users->addItem(name);
 }
 
 void Pharmacy::on_pushButton_AddPremiumCustomer_clicked()

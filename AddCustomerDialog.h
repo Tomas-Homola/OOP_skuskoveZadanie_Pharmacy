@@ -10,7 +10,7 @@ class AddCustomerDialog : public QDialog
 	Q_OBJECT
 
 public:
-	AddCustomerDialog(QWidget* parent = Q_NULLPTR) : QDialog(parent), addCustomerUI(new Ui::DialogAddCustomer)
+	AddCustomerDialog(QWidget* parent = Q_NULLPTR) : QDialog(parent), addCustomerUI(new Ui::AddCustomerDialog)
 	{
 		addCustomerUI->setupUi(this);
 	}
@@ -25,5 +25,22 @@ public:
 	}
 
 private:
-	Ui::DialogAddCustomer* addCustomerUI;
+	Ui::AddCustomerDialog* addCustomerUI;
+
+	bool showPassword = false;
+
+private slots:
+	void on_checkBox_ShowPassword_clicked()
+	{
+		if (!showPassword)
+		{
+			addCustomerUI->lineEdit_Password->setEchoMode(QLineEdit::Normal);
+			showPassword = true;
+		}
+		else if (showPassword)
+		{
+			addCustomerUI->lineEdit_Password->setEchoMode(QLineEdit::Password);
+			showPassword = false;
+		}
+	}
 };
