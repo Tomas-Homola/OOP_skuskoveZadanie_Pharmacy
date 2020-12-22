@@ -16,14 +16,19 @@ class Pharmacy : public QMainWindow
 
 public:
     Pharmacy(QWidget *parent = Q_NULLPTR);
-
+    
 private:
     Ui::PharmacyClass ui;
     AddCustomerDialog* addCustomerDialog;
     AddPremiumCustomerDialog* addPremiumCustomerDialog;
     AddEmployeeDialog* addEmployeeDialog;
 
+    Customer* signedCustomer = nullptr;
+    PremiumCustomer* signedPremiumCustomer = nullptr;
+    Employee* signedEmployee = nullptr;
+
     bool showPassword = false;
+    QString signedUser = "";
 
     QMessageBox msgBox;
 
@@ -33,14 +38,22 @@ private:
 
     Admin admin;
 
+    
+    bool loadAdmin();
+    bool loadCustomers();
+    bool loadPremiumCustomers();
+    bool loadEmployees();
     bool loadUsers();
+    
+    bool saveAdmin();
+    bool saveCustomers();
+    bool savePremiumCustomers();
+    bool saveEmployees();
     bool saveUsers();
 
 private slots:
     
     void closeEvent(QCloseEvent* event);
-
-    void on_actionsave_users_triggered();
 
     // groupBox_Main
     void on_pushButton_SignInWindow_clicked();

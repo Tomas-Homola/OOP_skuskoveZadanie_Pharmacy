@@ -12,185 +12,282 @@ QString adminPassword = "adminpassword";
 
 */
 
-bool Pharmacy::loadUsers()
+bool Pharmacy::loadAdmin()
 {
     QFile adminFile("_usersData/admin.txt");
-    QFile customersFile("_usersData/customers.txt");
-    QFile premiumCustomersFile("_usersData/premiumCustomers.txt");
-    QFile employeesFile("D:/__school/_OOP/_qt/_skuskoveZadanie/Pharmacy/_usersData/employees.txt");
 
-    bool isOpenedAdminFile = adminFile.open(QIODevice::ReadOnly | QIODevice::Text);
-    bool isOpenedCustomersFile = customersFile.open(QIODevice::ReadOnly | QIODevice::Text);
-    bool isOpenedPremiumCustomersFile = premiumCustomersFile.open(QIODevice::ReadOnly | QIODevice::Text);
-    bool isOpenedEmployeesFile = employeesFile.open(QIODevice::ReadOnly | QIODevice::Text);
-    
-    if (!isOpenedAdminFile || !isOpenedCustomersFile || !isOpenedPremiumCustomersFile || !isOpenedEmployeesFile)
+    if (!adminFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        qDebug() << "Error with opening files";
+        qDebug() << "Error with opening admin.txt";
         return false;
     }
     else
     {
-        qDebug() << "Files OPENED";
+        QTextStream fromFile(&adminFile);
+        QString password = fromFile.readLine();
 
-        QString name = "", surname = "", adress = "", position = "", login = "", password = "";
-        int discount = -1;
-       
-        // nacitanie Admin
-        QTextStream fromFile1(&adminFile);
-
-        password = fromFile1.readLine();
         admin.setPassword(password);
-        ui.comboBox_users->addItem("admin");
+        ui.comboBox_users->addItem(admin.getLogin());
 
         adminFile.close();
-        qDebug() << "admin loaded";
+        qDebug() << "Admin loaded\n";
 
-        // nacitanie Customers
-        QTextStream fromFile2(&customersFile);
+        return true;
+    }
+}
 
-        while (!fromFile2.atEnd())
+bool Pharmacy::loadCustomers()
+{
+    QFile customersFile("_usersData/customers.txt");
+
+    if (!customersFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Error with opening customers.txt";
+        return false;
+    }
+    else
+    {
+        QTextStream fromFile(&customersFile);
+
+        while (!fromFile.atEnd())
         {
-            qDebug() << "loading customers";
-            name = fromFile2.readLine();
-            surname = fromFile2.readLine();
-            adress = fromFile2.readLine();
-            login = fromFile2.readLine();
-            password = fromFile2.readLine();
+            QString name = fromFile.readLine();
+            QString surname = fromFile.readLine();
+            QString adress = fromFile.readLine();
+            QString login = fromFile.readLine();
+            QString password = fromFile.readLine();
 
-            customers.push_back(Customer(name, surname, adress, login, password)); // pridanie Customers do databazy
-            ui.comboBox_users->addItem(login); // pridanie do comboBoxu pri prihlasovani
+            customers.push_back(Customer(name, surname, adress, login, password));
+            ui.comboBox_users->addItem(login);
         }
-        customersFile.close();
-        qDebug() << "Customers loaded";
 
-        // nacitanie Premium Customers
-        QTextStream fromFile3(&customersFile);
+        customersFile.close();
         
-        while (!fromFile3.atEnd())
+        if (customers.isEmpty())
+            qDebug() << "No customers loaded\n";
+        else
+            qDebug() << "Customers loaded:" << customers.size() << "\n";
+        
+        return true;
+    }
+}
+
+bool Pharmacy::loadPremiumCustomers()
+{
+    QFile premiumCustomersFile("_usersData/premiumCustomers.txt");
+
+    if (!premiumCustomersFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Error with opening premiumCustomers.txt";
+        return false;
+    }
+    else
+    {
+        QTextStream fromFile(&premiumCustomersFile);
+
+        while (!fromFile.atEnd())
         {
-            qDebug() << "loading premium customers";
-            name = fromFile3.readLine();
-            surname = fromFile3.readLine();
-            adress = fromFile3.readLine();
-            discount = fromFile3.readLine().toInt();
-            login = fromFile3.readLine();
-            password = fromFile3.readLine();
+            QString name = fromFile.readLine();
+            QString surname = fromFile.readLine();
+            QString adress = fromFile.readLine();
+            int discount = fromFile.readLine().toInt();
+            QString login = fromFile.readLine();
+            QString password = fromFile.readLine();
 
             premiumCustomers.push_back(PremiumCustomer(name, surname, adress, discount, login, password));
             ui.comboBox_users->addItem(login);
         }
         premiumCustomersFile.close();
-        qDebug() << "Premium customers loaded";
+        
+        if (premiumCustomers.isEmpty())
+            qDebug() << "No premium customers loaded\n";
+        else
+            qDebug() << "premium customers loaded:" << premiumCustomers.size() << "\n";
 
-        // nacitanie Employees
-        /*QTextStream fromFile4(&employeesFile);
-        qDebug() << "Textstream done";
+        return true;
+    }
+}
 
-        while (!fromFile4.atEnd());
+bool Pharmacy::loadEmployees()
+{
+    QFile employeesFile("_usersData/employees.txt");
+
+    if (!employeesFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Error with opening employees.txt\n";
+        return false;
+    }
+    else
+    {
+        QTextStream fromFile(&employeesFile);
+
+        while (!fromFile.atEnd())
         {
-            qDebug() << "loading employees";
-            
-            position = "test";
-            qDebug() << "position:" << position << "///";
-            position = fromFile4.readLine();
-            qDebug() << "position:" << position << "///";
-
-            login = "test";
-            qDebug() << "login:" << login << "///";
-            login = fromFile4.readLine();
-            qDebug() << "login:" << login << "///";
-
-            password = "test";
-            qDebug() << "password:" << password << "///";
-            password = fromFile4.readLine();
-            qDebug() << "password:" << password << "///";
+            QString position = fromFile.readLine();
+            QString login = fromFile.readLine();
+            QString password = fromFile.readLine();
 
             employees.push_back(Employee(position, login, password));
             ui.comboBox_users->addItem(login);
         }
         employeesFile.close();
-        qDebug() << "Employees loaded";*/
+        if (employees.isEmpty())
+            qDebug() << "No employees loaded\n";
+        else
+            qDebug() << "Employees loaded:" << employees.size() << "\n";
+
         return true;
     }
 }
 
-bool Pharmacy::saveUsers()
+bool Pharmacy::loadUsers()
 {
-    // !file.open(QIODevice::ReadOnly | QIODevice::Text)
-    QFile adminFile("_usersData/admin.txt");
-    QFile customersFile("_usersData/customers.txt");
-    QFile premiumCustomersFile("_usersData/premiumCustomers.txt");
-    QFile employeesFile("_usersData/employees.txt");
-
-    bool isOpenedAdminFile = adminFile.open(QIODevice::WriteOnly | QIODevice::Text);
-    bool isOpenedCustomersFile = customersFile.open(QIODevice::WriteOnly | QIODevice::Text);
-    bool isOpenedPremiumCustomersFile = premiumCustomersFile.open(QIODevice::WriteOnly | QIODevice::Text);
-    bool isOpenedEmployeesFile = employeesFile.open(QIODevice::WriteOnly | QIODevice::Text);
-
-    if (!isOpenedAdminFile && !isOpenedCustomersFile && !isOpenedPremiumCustomersFile && !isOpenedEmployeesFile)
+    if (loadAdmin() && loadCustomers() && loadPremiumCustomers() && loadEmployees())
     {
-        qDebug() << "Files not opened";
+        qDebug() << "All data loaded\n";
+        return true;
+    }
+    else
+    {
+        qDebug() << "Error with loading data\n";
+        return false;
+    }
+}
+
+bool Pharmacy::saveAdmin()
+{
+    QFile adminFile("_usersData/admin.txt");
+
+    if (!adminFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug() << "Error with opening admin.txt\n";
         return false;
     }
     else
     {
-        // zapis admina
-        QTextStream out1(&adminFile);
+        QTextStream toFile(&adminFile);
 
-        out1 << admin.getPassword();
+        toFile << admin.getPassword();
 
-        // zapis Customers
+        adminFile.close();
+        qDebug() << "Admin saved\n";
+        return true;
+    }
+}
+
+bool Pharmacy::saveCustomers()
+{
+    QFile customersFile("_usersData/customers.txt");
+
+    if (!customersFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug() << "Error with opening customers.txt\n";
+        return false;
+    }
+    else
+    {
+        QTextStream toFile(&customersFile);
+
         if (!customers.isEmpty())
         {
-            qDebug() << "zapis customers";
-            QTextStream out2(&customersFile);
-            for (int i = 0; i < customers.size(); i++)
+            qDebug() << "Saving customers...";
+            QTextStream toFile(&customersFile);
+
+            int i = 0;
+            for (i = 0; i < customers.size(); i++)
             {
                 if (i == (customers.size() - 1))
-                    out2 << customers[i].getName() << "\n" << customers[i].getSurname() << "\n" << customers[i].getAdress() << "\n" << customers[i].getLogin() << "\n" << customers[i].getPassword();
+                    toFile << customers[i].getName() << "\n" << customers[i].getSurname() << "\n" << customers[i].getAdress() << "\n" << customers[i].getLogin() << "\n" << customers[i].getPassword();
                 else
-                    out2 << customers[i].getName() << "\n" << customers[i].getSurname() << "\n" << customers[i].getAdress() << "\n" << customers[i].getLogin() << "\n" << customers[i].getPassword() << "\n";
+                    toFile << customers[i].getName() << "\n" << customers[i].getSurname() << "\n" << customers[i].getAdress() << "\n" << customers[i].getLogin() << "\n" << customers[i].getPassword() << "\n";
             }
+            qDebug() << "Customers to save:" << customers.size();
+            qDebug() << "Customers saved:" << i << "\n";
         }
+        customersFile.close();
+        return true;
+    }
+}
 
-        // zapis Premium Customers
+bool Pharmacy::savePremiumCustomers()
+{
+    QFile premiumCustomersFile("_usersData/premiumCustomers.txt");
+
+    if (!premiumCustomersFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug() << "Error with opening premiumCustomers.txt";
+        return false;
+    }
+    else
+    {
         if (!premiumCustomers.isEmpty())
         {
-            qDebug() << "zapis premium customers";
-            QTextStream out3(&premiumCustomersFile);
-            for (int i = 0; i < premiumCustomers.size(); i++)
+            qDebug() << "Saving premium customers...";
+            QTextStream toFile(&premiumCustomersFile);
+
+            int i = 0;
+            for (i = 0; i < premiumCustomers.size(); i++)
             {
                 if (i == (premiumCustomers.size() - 1))
-                    out3 << premiumCustomers[i].getName() << "\n" << premiumCustomers[i].getSurname() << "\n" << premiumCustomers[i].getAdress() << "\n" << premiumCustomers[i].getDiscount() << "\n" << premiumCustomers[i].getLogin() << "\n" << premiumCustomers[i].getPassword();
+                    toFile << premiumCustomers[i].getName() << "\n" << premiumCustomers[i].getSurname() << "\n" << premiumCustomers[i].getAdress() << "\n" << premiumCustomers[i].getDiscount() << "\n" << premiumCustomers[i].getLogin() << "\n" << premiumCustomers[i].getPassword();
                 else
-                    out3 << premiumCustomers[i].getName() << "\n" << premiumCustomers[i].getSurname() << "\n" << premiumCustomers[i].getAdress() << "\n" << premiumCustomers[i].getDiscount() << "\n" << premiumCustomers[i].getLogin() << "\n" << premiumCustomers[i].getPassword() << "\n";
+                    toFile << premiumCustomers[i].getName() << "\n" << premiumCustomers[i].getSurname() << "\n" << premiumCustomers[i].getAdress() << "\n" << premiumCustomers[i].getDiscount() << "\n" << premiumCustomers[i].getLogin() << "\n" << premiumCustomers[i].getPassword() << "\n";
             }
+            qDebug() << "Premium customers to save:" << premiumCustomers.size();
+            qDebug() << "Premium customers saved:" << i << "\n";
         }
+        premiumCustomersFile.close();
+        return true;
+    }
+}
 
-        // zapis Employees
+bool Pharmacy::saveEmployees()
+{
+    QFile employeesFile("_usersData/employees.txt");
+
+    if (!employeesFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug() << "Error with opening employees.txt\n";
+        return false;
+    }
+    else
+    {
         if (!employees.isEmpty())
         {
-            qDebug() << "zapis employees";
+            qDebug() << "Saving employees...";
             QTextStream out4(&employeesFile);
-            for (int i = 0; i < employees.size(); i++)
+
+            int i = 0;
+            for (i = 0; i < employees.size(); i++)
             {
                 if (i == (employees.size() - 1))
                     out4 << employees[i].getPosition() << "\n" << employees[i].getLogin() << "\n" << employees[i].getPassword();
                 else
                     out4 << employees[i].getPosition() << "\n" << employees[i].getLogin() << "\n" << employees[i].getPassword() << "\n";
             }
+            qDebug() << "Employees to save:" << employees.size();
+            qDebug() << "Saved employees:" << i << "\n";
         }
-
-        adminFile.close();
-        customersFile.close();
-        premiumCustomersFile.close();
         employeesFile.close();
-        
         return true;
     }
 }
 
+bool Pharmacy::saveUsers()
+{
+    if (saveAdmin() && saveCustomers() && savePremiumCustomers() && saveEmployees())
+    {
+        qDebug() << "Users saving done\n";
+        return true;
+    }
+    else
+    {
+        qDebug() << "Error with saving users\n";
+        return false;
+    }
+}
+
+// After START-UP
 Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
 {
     ui.setupUi(this);
@@ -210,7 +307,7 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
         qDebug() << "Users loaded";
     else
         qDebug() << "Error loading users";
-
+        
 }
 
 // ukoncenie programu
@@ -229,21 +326,13 @@ void Pharmacy::closeEvent(QCloseEvent* event)
 
             event->ignore();
         }
+        //event->accept();
     }
     else
     {
         event->ignore();
     }
 }
-
-void Pharmacy::on_actionsave_users_triggered()
-{
-    if (saveUsers())
-        qDebug() << "Users saved";
-    else
-        qDebug() << "Error with users saving";
-}
-
 
 
 // groupBox_Main
@@ -288,36 +377,104 @@ void Pharmacy::on_pushButton_PrintUsers_clicked()
 // groupBox_SignIn
 void Pharmacy::on_pushButton_SignInConfirm_clicked()
 {
-    QString password = ui.lineEdit_Password->text(); // temporary string pre ulozenie zadaneho hesla
+    int i = 0;
+    bool found = false;
+    QString enteredPassword = ui.lineEdit_Password->text(); // temporary string pre ulozenie zadaneho hesla
+    QString correctPassword = "";
+    QString chosenLogin = ui.comboBox_users->currentText();
 
     ui.lineEdit_Password->setText(""); // vymazanie zadaneho hesla z lineEditu
     
     // premena zadaneho hesla na zasifrovanu formu cez nejaky hash, aby sa dalo porovnat s ulozenym heslom
-    password = QCryptographicHash::hash(password.toStdString().c_str(), QCryptographicHash::Sha1).toHex();
+    enteredPassword = QCryptographicHash::hash(enteredPassword.toStdString().c_str(), QCryptographicHash::Sha1).toHex();
     
-    if (admin.getPassword() == password)
+    if (ui.comboBox_users->currentText() == admin.getLogin()) // ak sa chce prihlasit admin
     {
-        msgBox.setWindowTitle("Info message");
-        msgBox.setText("Logged as: " + admin.getLogin());
-        msgBox.exec();
+        if (enteredPassword == admin.getPassword())
+        {
+            signedUser = admin.whoAmI();
 
-        // groupBox_main
-        ui.label_SignedInAs->setText("Signed in as: " + admin.getLogin());
-        ui.pushButton_SignInWindow->setVisible(false);
-        ui.pushButton_SignOut->setVisible(true);
+            msgBox.setWindowTitle("Info message");
+            msgBox.setText("Logged as: " + admin.getLogin());
+            msgBox.exec();
 
-        // groupBox_SignIn
-        ui.groupBox_SignIn->setVisible(false);
-        
-        // groupBox_AdminStuff
-        ui.groupBox_AdminStuff->setVisible(true);
+            // groupBox_main
+            ui.label_SignedInAs->setText("Signed in as: " + admin.getLogin());
+            ui.pushButton_SignInWindow->setVisible(false);
+            ui.pushButton_SignOut->setVisible(true);
+
+            // groupBox_SignIn
+            ui.groupBox_SignIn->setVisible(false);
+
+            // groupBox_AdminStuff
+            ui.groupBox_AdminStuff->setVisible(true);
+        }
+        else
+        {
+            msgBox.setWindowTitle("Info message");
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setText("Incorrect password");
+            msgBox.exec();
+        }
     }
-    else
+    else // ak sa nechce prihlasit admin, ide sa prihlasit nejaky user
     {
-        msgBox.setWindowTitle("Info message");
-        msgBox.setText("Incorrect password");
-        msgBox.exec();
+        while (true)
+        {
+            // Customers
+            for (i = 0; i < customers.size(); i++)
+            {
+                if (customers[i].getLogin() == chosenLogin)
+                {
+                    found = true;
+                    signedUser = customers[i].whoAmI();
+                    signedCustomer = &customers[i];
+                    break;
+                }
+            }
 
+            if (found) // ak sa uz naslo, tak sa zvysok preskoci a dalej uz nehlada
+                break;
+
+            for (i = 0; i < premiumCustomers.size(); i++)
+            {
+                if (premiumCustomers[i].getLogin() == chosenLogin)
+                {
+                    found = true;
+                    signedUser = premiumCustomers[i].whoAmI();
+                    signedPremiumCustomer = &premiumCustomers[i];
+                    break;
+                }
+            }
+
+            if (found)
+                break;
+
+            for (i = 0; i < employees.size(); i++)
+            {
+                if (employees[i].getLogin() == chosenLogin)
+                {
+                    found = true;
+                    signedUser = employees[i].whoAmI();
+                    signedEmployee = &employees[i];
+                    break;
+                }
+            }
+            break;
+        }
+
+        if (signedUser == "Customer")
+        {
+
+        }
+        else if (signedUser == "PremiumCustomer")
+        {
+
+        }
+        else if (signedUser == "Employee")
+        {
+
+        }
     }
 
 }
