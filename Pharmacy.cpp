@@ -298,8 +298,10 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
     // groupBox_SignIn
     ui.groupBox_SignIn->setVisible(false);
 
-    // groupBox_AdminStuff
+    // groupBoxi pre Users Stuff
     ui.groupBox_AdminStuff->setVisible(false);
+    ui.groupBox_CustomerStuff->setVisible(false);
+    ui.groupBox_EmployeeStuff->setVisible(false);
 
     //qDebug() << QCryptographicHash::hash(QString("admin").toStdString().c_str(), QCryptographicHash::Sha1).toHex();
     
@@ -354,10 +356,12 @@ void Pharmacy::on_pushButton_SignOut_clicked()
     // groupBox_Main
     ui.pushButton_SignOut->setVisible(false);
     ui.pushButton_SignInWindow->setVisible(true);
-    ui.label_SignedInAs->setText("Signed in as:");
+    ui.label_SignedInAs->setText("Signed out");
 
-    //groupBox_AdminStuff
+    //groupBoxi Users Stuff
     ui.groupBox_AdminStuff->setVisible(false);
+    ui.groupBox_CustomerStuff->setVisible(false);
+    ui.groupBox_EmployeeStuff->setVisible(false);
 }
 
 void Pharmacy::on_pushButton_PrintUsers_clicked()
@@ -377,7 +381,7 @@ void Pharmacy::on_pushButton_PrintUsers_clicked()
 // groupBox_SignIn
 void Pharmacy::on_pushButton_SignInConfirm_clicked()
 {
-    int i = 0;
+    int i = 0, foundIndex = -1;
     bool found = false;
     QString enteredPassword = ui.lineEdit_Password->text(); // temporary string pre ulozenie zadaneho hesla
     QString correctPassword = "";
@@ -388,13 +392,14 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
     // premena zadaneho hesla na zasifrovanu formu cez nejaky hash, aby sa dalo porovnat s ulozenym heslom
     enteredPassword = QCryptographicHash::hash(enteredPassword.toStdString().c_str(), QCryptographicHash::Sha1).toHex();
     
-    if (ui.comboBox_users->currentText() == admin.getLogin()) // ak sa chce prihlasit admin
+    if (chosenLogin == admin.getLogin()) // ak sa chce prihlasit admin
     {
         if (enteredPassword == admin.getPassword())
         {
-            signedUser = admin.whoAmI();
+            wantsToSign = admin.whoAmI();
 
             msgBox.setWindowTitle("Info message");
+            msgBox.setIcon(QMessageBox::Information);
             msgBox.setText("Logged as: " + admin.getLogin());
             msgBox.exec();
 
@@ -427,8 +432,9 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 if (customers[i].getLogin() == chosenLogin)
                 {
                     found = true;
-                    signedUser = customers[i].whoAmI();
-                    signedCustomer = &customers[i];
+                    foundIndex = i;
+                    wantsToSign = customers[i].whoAmI();
+                    correctPassword = customers[i].getPassword();
                     break;
                 }
             }
@@ -441,8 +447,9 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 if (premiumCustomers[i].getLogin() == chosenLogin)
                 {
                     found = true;
-                    signedUser = premiumCustomers[i].whoAmI();
-                    signedPremiumCustomer = &premiumCustomers[i];
+                    foundIndex = i;
+                    wantsToSign = premiumCustomers[i].whoAmI();
+                    correctPassword = premiumCustomers[i].getPassword();
                     break;
                 }
             }
@@ -455,25 +462,104 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 if (employees[i].getLogin() == chosenLogin)
                 {
                     found = true;
-                    signedUser = employees[i].whoAmI();
-                    signedEmployee = &employees[i];
+                    foundIndex = i;
+                    wantsToSign = employees[i].whoAmI();
+                    correctPassword = employees[i].getPassword();
                     break;
                 }
             }
             break;
         }
 
-        if (signedUser == "Customer")
+        if (wantsToSign == "Customer")
         {
+            if (enteredPassword == correctPassword)
+            {
+                signedCustomer = &customers[foundIndex];
 
+                msgBox.setWindowTitle("Info message");
+                msgBox.setIcon(QMessageBox::Information);
+                msgBox.setText("Logged as: " + signedCustomer->getLogin());
+                msgBox.exec();
+
+                // groupBox_main
+                ui.label_SignedInAs->setText("Signed in as: " + signedCustomer->getLogin());
+                ui.pushButton_SignInWindow->setVisible(false);
+                ui.pushButton_SignOut->setVisible(true);
+
+                // groupBox_SignIn
+                ui.groupBox_SignIn->setVisible(false);
+
+                // groupBox_CustomerStuff
+                ui.groupBox_CustomerStuff->setVisible(true);
+            }
+            else
+            {
+                msgBox.setWindowTitle("Info message");
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setText("Incorrect password");
+                msgBox.exec();
+            }
         }
-        else if (signedUser == "PremiumCustomer")
+        else if (wantsToSign == "PremiumCustomer")
         {
+            if (enteredPassword == correctPassword)
+            {
+                signedPremiumCustomer = &premiumCustomers[foundIndex];
 
+                msgBox.setWindowTitle("Info message");
+                msgBox.setIcon(QMessageBox::Information);
+                msgBox.setText("Logged as: " + signedPremiumCustomer->getLogin());
+                msgBox.exec();
+
+                // groupBox_main
+                ui.label_SignedInAs->setText("Signed in as: " + signedPremiumCustomer->getLogin());
+                ui.pushButton_SignInWindow->setVisible(false);
+                ui.pushButton_SignOut->setVisible(true);
+
+                // groupBox_SignIn
+                ui.groupBox_SignIn->setVisible(false);
+
+                // groupBox_CustomerStuff
+                ui.groupBox_CustomerStuff->setVisible(true);
+            }
+            else
+            {
+                msgBox.setWindowTitle("Info message");
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setText("Incorrect password");
+                msgBox.exec();
+            }
         }
-        else if (signedUser == "Employee")
+        else if (wantsToSign == "Employee")
         {
+            if (enteredPassword == correctPassword)
+            {
+                signedEmployee = &employees[foundIndex];
 
+                msgBox.setWindowTitle("Info message");
+                msgBox.setIcon(QMessageBox::Information);
+                msgBox.setText("Logged as: " + signedEmployee->getLogin());
+                msgBox.exec();
+
+                // groupBox_main
+                ui.label_SignedInAs->setText("Signed in as: " + signedEmployee->getLogin());
+                ui.pushButton_SignInWindow->setVisible(false);
+                ui.pushButton_SignOut->setVisible(true);
+
+                // groupBox_SignIn
+                ui.groupBox_SignIn->setVisible(false);
+
+                // groupBox_CustomerStuff
+                ui.groupBox_EmployeeStuff->setVisible(true);
+            }
+            else
+            {
+                msgBox.setWindowTitle("Info message");
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setText("Incorrect password");
+                msgBox.exec();
+            }
         }
     }
 

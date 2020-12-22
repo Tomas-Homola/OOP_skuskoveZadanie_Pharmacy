@@ -28,7 +28,7 @@ private:
     Employee* signedEmployee = nullptr;
 
     bool showPassword = false;
-    QString signedUser = "";
+    QString wantsToSign = "";
 
     QMessageBox msgBox;
 
