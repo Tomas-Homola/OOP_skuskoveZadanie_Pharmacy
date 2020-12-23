@@ -33,20 +33,11 @@ private:
 
     QMessageBox msgBox;
 
-    //QVector<Customer> customers;
-    //QVector<PremiumCustomer> premiumCustomers;
-    //QVector<Employee> employees;
-
     // veci na ukladanie dat uzivatelov
     Admin admin;
 
-    QVector<QString> customersLogin;
     QMap<QString, Customer> customers;
-    
-    QVector<QString> premiumCustomersLogin;
     QMap<QString, PremiumCustomer> premiumCustomers;
-    
-    QVector<QString> employeesLogin;
     QMap<QString, Employee> employees;
 
     
