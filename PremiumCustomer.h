@@ -2,7 +2,7 @@
 
 #include "Customer.h"
 
-class PremiumCustomer : public Customer
+class PremiumCustomer : public Customer//, public User
 {
 private:
 	int discount = -1;
@@ -16,5 +16,7 @@ public:
 	QString whoAmI() { return "PremiumCustomer"; }
 
 	void setDicount(int newDiscount) { discount = newDiscount; }
+
+	void info() { qDebug() << name << surname << adress << discount << login << password; }
 
 };

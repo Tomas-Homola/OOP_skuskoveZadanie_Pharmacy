@@ -4,7 +4,7 @@
 
 class Customer : public User
 {
-private:
+protected:
 	QString name = "";
 	QString surname = "";
 	QString adress = "";
@@ -22,5 +22,7 @@ public:
 	void setName(QString newName) { name = newName; }
 	void setSurname(QString newSurname) { surname = newSurname; }
 	void setAdress(QString newAdress) { adress = newAdress; }
+
+	void info() { qDebug() << name << surname << adress << login << password; }
 
 };

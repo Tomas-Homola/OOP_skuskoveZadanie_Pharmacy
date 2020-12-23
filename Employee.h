@@ -17,4 +17,6 @@ public:
 
 	void setPosition(QString newPosition) { position = newPosition; }
 
+	void info() { qDebug() << position << login << password; }
+
 };
