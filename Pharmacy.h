@@ -9,6 +9,7 @@
 #include "AddCustomerDialog.h"
 #include "AddPremiumCustomerDialog.h"
 #include "AddEmployeeDialog.h"
+#include <any>
 
 class Pharmacy : public QMainWindow
 {
@@ -28,23 +29,35 @@ private:
     Employee* signedEmployee = nullptr;
 
     bool showPassword = false;
-    QString wantsToSign = "";
+    QString signedUserType = "";
 
     QMessageBox msgBox;
 
-    QVector<Customer> customers;
-    QVector<PremiumCustomer> premiumCustomers;
-    QVector<Employee> employees;
+    //QVector<Customer> customers;
+    //QVector<PremiumCustomer> premiumCustomers;
+    //QVector<Employee> employees;
 
+    // veci na ukladanie dat uzivatelov
     Admin admin;
 
+    QVector<QString> customersLogin;
+    QMap<QString, Customer> customers;
     
+    QVector<QString> premiumCustomersLogin;
+    QMap<QString, PremiumCustomer> premiumCustomers;
+    
+    QVector<QString> employeesLogin;
+    QMap<QString, Employee> employees;
+
+    
+    // nacitanie dat uzivatelov
     bool loadAdmin();
     bool loadCustomers();
     bool loadPremiumCustomers();
     bool loadEmployees();
     bool loadUsers();
     
+    // ukladanie dat uzivatelov
     bool saveAdmin();
     bool saveCustomers();
     bool savePremiumCustomers();

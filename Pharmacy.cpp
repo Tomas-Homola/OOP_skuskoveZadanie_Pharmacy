@@ -57,16 +57,19 @@ bool Pharmacy::loadCustomers()
             QString login = fromFile.readLine();
             QString password = fromFile.readLine();
 
-            customers.push_back(Customer(name, surname, adress, login, password));
+            //customers.push_back(Customer(name, surname, adress, login, password));
+            customersLogin.push_back(login);
+            customers[login] = Customer(name, surname, adress, login, password);
             ui.comboBox_users->addItem(login);
+
         }
 
         customersFile.close();
         
-        if (customers.isEmpty())
+        if (customersLogin.isEmpty())
             qDebug() << "No customers loaded\n";
         else
-            qDebug() << "Customers loaded:" << customers.size() << "\n";
+            qDebug() << "Customers loaded:" << customersLogin.size() << "\n";
         
         return true;
     }
@@ -94,15 +97,17 @@ bool Pharmacy::loadPremiumCustomers()
             QString login = fromFile.readLine();
             QString password = fromFile.readLine();
 
-            premiumCustomers.push_back(PremiumCustomer(name, surname, adress, discount, login, password));
+            //premiumCustomers.push_back(PremiumCustomer(name, surname, adress, discount, login, password));
+            premiumCustomersLogin.push_back(login);
+            premiumCustomers[login] = PremiumCustomer(name, surname, adress, discount, login, password);
             ui.comboBox_users->addItem(login);
         }
         premiumCustomersFile.close();
         
-        if (premiumCustomers.isEmpty())
+        if (premiumCustomersLogin.isEmpty())
             qDebug() << "No premium customers loaded\n";
         else
-            qDebug() << "premium customers loaded:" << premiumCustomers.size() << "\n";
+            qDebug() << "premium customers loaded:" << premiumCustomersLogin.size() << "\n";
 
         return true;
     }
@@ -127,14 +132,16 @@ bool Pharmacy::loadEmployees()
             QString login = fromFile.readLine();
             QString password = fromFile.readLine();
 
-            employees.push_back(Employee(position, login, password));
+            //employees.push_back(Employee(position, login, password));
+            employeesLogin.push_back(login);
+            employees[login] = Employee(position, login, password);
             ui.comboBox_users->addItem(login);
         }
         employeesFile.close();
-        if (employees.isEmpty())
+        if (employeesLogin.isEmpty())
             qDebug() << "No employees loaded\n";
         else
-            qDebug() << "Employees loaded:" << employees.size() << "\n";
+            qDebug() << "Employees loaded:" << employeesLogin.size() << "\n";
 
         return true;
     }
@@ -188,7 +195,7 @@ bool Pharmacy::saveCustomers()
     {
         QTextStream toFile(&customersFile);
 
-        if (!customers.isEmpty())
+        /*if (!customers.isEmpty())
         {
             qDebug() << "Saving customers...";
             QTextStream toFile(&customersFile);
@@ -202,6 +209,23 @@ bool Pharmacy::saveCustomers()
                     toFile << customers[i].getName() << "\n" << customers[i].getSurname() << "\n" << customers[i].getAdress() << "\n" << customers[i].getLogin() << "\n" << customers[i].getPassword() << "\n";
             }
             qDebug() << "Customers to save:" << customers.size();
+            qDebug() << "Customers saved:" << i << "\n";
+        }*/
+
+        if (!customersLogin.isEmpty())
+        {
+            qDebug() << "Saving customers...";
+            QTextStream toFile(&customersFile);
+
+            int i = 0;
+            for (i = 0; i < customersLogin.size(); i++)
+            {
+                if (i == (customersLogin.size() - 1))
+                    toFile << customers[customersLogin[i]].getName() << "\n" << customers[customersLogin[i]].getSurname() << "\n" << customers[customersLogin[i]].getAdress() << "\n" << customers[customersLogin[i]].getLogin() << "\n" << customers[customersLogin[i]].getPassword();
+                else
+                    toFile << customers[customersLogin[i]].getName() << "\n" << customers[customersLogin[i]].getSurname() << "\n" << customers[customersLogin[i]].getAdress() << "\n" << customers[customersLogin[i]].getLogin() << "\n" << customers[customersLogin[i]].getPassword() << "\n";
+            }
+            qDebug() << "Customers to save:" << customersLogin.size();
             qDebug() << "Customers saved:" << i << "\n";
         }
         customersFile.close();
@@ -220,7 +244,7 @@ bool Pharmacy::savePremiumCustomers()
     }
     else
     {
-        if (!premiumCustomers.isEmpty())
+        /*if (!premiumCustomers.isEmpty())
         {
             qDebug() << "Saving premium customers...";
             QTextStream toFile(&premiumCustomersFile);
@@ -234,6 +258,23 @@ bool Pharmacy::savePremiumCustomers()
                     toFile << premiumCustomers[i].getName() << "\n" << premiumCustomers[i].getSurname() << "\n" << premiumCustomers[i].getAdress() << "\n" << premiumCustomers[i].getDiscount() << "\n" << premiumCustomers[i].getLogin() << "\n" << premiumCustomers[i].getPassword() << "\n";
             }
             qDebug() << "Premium customers to save:" << premiumCustomers.size();
+            qDebug() << "Premium customers saved:" << i << "\n";
+        }*/
+
+        if (!premiumCustomersLogin.isEmpty())
+        {
+            qDebug() << "Saving premium customers...";
+            QTextStream toFile(&premiumCustomersFile);
+
+            int i = 0;
+            for (i = 0; i < premiumCustomersLogin.size(); i++)
+            {
+                if (i == (premiumCustomersLogin.size() - 1))
+                    toFile << premiumCustomers[premiumCustomersLogin[i]].getName() << "\n" << premiumCustomers[premiumCustomersLogin[i]].getSurname() << "\n" << premiumCustomers[premiumCustomersLogin[i]].getAdress() << "\n" << premiumCustomers[premiumCustomersLogin[i]].getDiscount() << "\n" << premiumCustomers[premiumCustomersLogin[i]].getLogin() << "\n" << premiumCustomers[premiumCustomersLogin[i]].getPassword();
+                else
+                    toFile << premiumCustomers[premiumCustomersLogin[i]].getName() << "\n" << premiumCustomers[premiumCustomersLogin[i]].getSurname() << "\n" << premiumCustomers[premiumCustomersLogin[i]].getAdress() << "\n" << premiumCustomers[premiumCustomersLogin[i]].getDiscount() << "\n" << premiumCustomers[premiumCustomersLogin[i]].getLogin() << "\n" << premiumCustomers[premiumCustomersLogin[i]].getPassword() << "\n";
+            }
+            qDebug() << "Premium customers to save:" << premiumCustomersLogin.size();
             qDebug() << "Premium customers saved:" << i << "\n";
         }
         premiumCustomersFile.close();
@@ -252,7 +293,7 @@ bool Pharmacy::saveEmployees()
     }
     else
     {
-        if (!employees.isEmpty())
+        /*if (!employees.isEmpty())
         {
             qDebug() << "Saving employees...";
             QTextStream out4(&employeesFile);
@@ -266,6 +307,23 @@ bool Pharmacy::saveEmployees()
                     out4 << employees[i].getPosition() << "\n" << employees[i].getLogin() << "\n" << employees[i].getPassword() << "\n";
             }
             qDebug() << "Employees to save:" << employees.size();
+            qDebug() << "Saved employees:" << i << "\n";
+        }*/
+
+        if (!employeesLogin.isEmpty())
+        {
+            qDebug() << "Saving employees...";
+            QTextStream out4(&employeesFile);
+
+            int i = 0;
+            for (i = 0; i < employeesLogin.size(); i++)
+            {
+                if (i == (employeesLogin.size() - 1))
+                    out4 << employees[employeesLogin[i]].getPosition() << "\n" << employees[employeesLogin[i]].getLogin() << "\n" << employees[employeesLogin[i]].getPassword();
+                else
+                    out4 << employees[employeesLogin[i]].getPosition() << "\n" << employees[employeesLogin[i]].getLogin() << "\n" << employees[employeesLogin[i]].getPassword() << "\n";
+            }
+            qDebug() << "Employees to save:" << employeesLogin.size();
             qDebug() << "Saved employees:" << i << "\n";
         }
         employeesFile.close();
@@ -309,7 +367,24 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
         qDebug() << "Users loaded";
     else
         qDebug() << "Error loading users";
-        
+    
+    
+
+    /*for (int i = 0; i < customersLogin.size(); i++)
+    {
+        customers2[customersLogin[i]].info();
+    }
+
+    for (int i = 0; i < premiumCustomersLogin.size(); i++)
+    {
+        premiumCustomers2[premiumCustomersLogin[i]].info();
+    }
+
+    for (int i = 0; i < employeesLogin.size(); i++)
+    {
+        employees2[employeesLogin[i]].info();
+    }*/
+   
 }
 
 // ukoncenie programu
@@ -335,7 +410,6 @@ void Pharmacy::closeEvent(QCloseEvent* event)
         event->ignore();
     }
 }
-
 
 // groupBox_Main
 void Pharmacy::on_pushButton_SignInWindow_clicked()
@@ -368,14 +442,14 @@ void Pharmacy::on_pushButton_PrintUsers_clicked()
 {
     qDebug() << admin.getLogin() << admin.getPassword();
 
-    for (int i = 0; i < customers.size(); i++)
-        qDebug() << customers[i].getName() << customers[i].getSurname() << customers[i].getAdress() << customers[i].getLogin() << customers[i].getPassword();
+    for (int i = 0; i < customersLogin.size(); i++)
+        qDebug() << customers[customersLogin[i]].getName() << customers[customersLogin[i]].getSurname() << customers[customersLogin[i]].getAdress() << customers[customersLogin[i]].getLogin() << customers[customersLogin[i]].getPassword();
 
-    for (int i = 0; i < premiumCustomers.size(); i++)
-        qDebug() << premiumCustomers[i].getName() << premiumCustomers[i].getSurname() << premiumCustomers[i].getAdress() << premiumCustomers[i].getDiscount() << premiumCustomers[i].getLogin() << premiumCustomers[i].getPassword();
+    for (int i = 0; i < premiumCustomersLogin.size(); i++)
+        qDebug() << premiumCustomers[premiumCustomersLogin[i]].getName() << premiumCustomers[premiumCustomersLogin[i]].getSurname() << premiumCustomers[premiumCustomersLogin[i]].getAdress() << premiumCustomers[premiumCustomersLogin[i]].getDiscount() << premiumCustomers[premiumCustomersLogin[i]].getLogin() << premiumCustomers[premiumCustomersLogin[i]].getPassword();
 
-    for (int i = 0; i < employees.size(); i++)
-        qDebug() << employees[i].getPosition() << employees[i].getLogin() << employees[i].getPassword();
+    for (int i = 0; i < employeesLogin.size(); i++)
+        qDebug() << employees[employeesLogin[i]].getPosition() << employees[employeesLogin[i]].getLogin() << employees[employeesLogin[i]].getPassword();
 }
 
 // groupBox_SignIn
@@ -396,7 +470,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
     {
         if (enteredPassword == admin.getPassword())
         {
-            wantsToSign = admin.whoAmI();
+            signedUserType = admin.whoAmI();
 
             msgBox.setWindowTitle("Info message");
             msgBox.setIcon(QMessageBox::Information);
@@ -416,7 +490,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
         }
         else
         {
-            msgBox.setWindowTitle("Info message");
+            msgBox.setWindowTitle("Warning");
             msgBox.setIcon(QMessageBox::Warning);
             msgBox.setText("Incorrect password");
             msgBox.exec();
@@ -424,62 +498,19 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
     }
     else // ak sa nechce prihlasit admin, ide sa prihlasit nejaky user
     {
-        while (true)
+        if (customersLogin.contains(chosenLogin))
         {
-            // Customers
-            for (i = 0; i < customers.size(); i++)
+            if (enteredPassword == customers[chosenLogin].getPassword())
             {
-                if (customers[i].getLogin() == chosenLogin)
-                {
-                    found = true;
-                    foundIndex = i;
-                    wantsToSign = customers[i].whoAmI();
-                    correctPassword = customers[i].getPassword();
-                    break;
-                }
-            }
+                signedUserType = customers[chosenLogin].whoAmI();
+                signedCustomer = &customers[chosenLogin];
+                qDebug() << "Signed customer info:";
+                signedCustomer->info();
 
-            if (found) // ak sa uz naslo, tak sa zvysok preskoci a dalej uz nehlada
-                break;
-
-            for (i = 0; i < premiumCustomers.size(); i++)
-            {
-                if (premiumCustomers[i].getLogin() == chosenLogin)
-                {
-                    found = true;
-                    foundIndex = i;
-                    wantsToSign = premiumCustomers[i].whoAmI();
-                    correctPassword = premiumCustomers[i].getPassword();
-                    break;
-                }
-            }
-
-            if (found)
-                break;
-
-            for (i = 0; i < employees.size(); i++)
-            {
-                if (employees[i].getLogin() == chosenLogin)
-                {
-                    found = true;
-                    foundIndex = i;
-                    wantsToSign = employees[i].whoAmI();
-                    correctPassword = employees[i].getPassword();
-                    break;
-                }
-            }
-            break;
-        }
-
-        if (wantsToSign == "Customer")
-        {
-            if (enteredPassword == correctPassword)
-            {
-                signedCustomer = &customers[foundIndex];
-
+                // info message
                 msgBox.setWindowTitle("Info message");
                 msgBox.setIcon(QMessageBox::Information);
-                msgBox.setText("Logged as: " + signedCustomer->getLogin());
+                msgBox.setText("Welcome " + signedCustomer->getLogin());
                 msgBox.exec();
 
                 // groupBox_main
@@ -495,21 +526,25 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
             }
             else
             {
-                msgBox.setWindowTitle("Info message");
+                msgBox.setWindowTitle("Warning");
                 msgBox.setIcon(QMessageBox::Warning);
                 msgBox.setText("Incorrect password");
                 msgBox.exec();
             }
         }
-        else if (wantsToSign == "PremiumCustomer")
+        else if (premiumCustomersLogin.contains(chosenLogin))
         {
-            if (enteredPassword == correctPassword)
+            if (enteredPassword == premiumCustomers[chosenLogin].getPassword())
             {
-                signedPremiumCustomer = &premiumCustomers[foundIndex];
+                signedUserType = premiumCustomers[chosenLogin].whoAmI();
+                signedPremiumCustomer = &premiumCustomers[chosenLogin];
+                //qDebug() << "Signed premium customer info:";
+                //signedPremiumCustomer->info();
 
+                // info message
                 msgBox.setWindowTitle("Info message");
                 msgBox.setIcon(QMessageBox::Information);
-                msgBox.setText("Logged as: " + signedPremiumCustomer->getLogin());
+                msgBox.setText("Welcome " + signedPremiumCustomer->getLogin());
                 msgBox.exec();
 
                 // groupBox_main
@@ -525,21 +560,25 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
             }
             else
             {
-                msgBox.setWindowTitle("Info message");
+                msgBox.setWindowTitle("Warning");
                 msgBox.setIcon(QMessageBox::Warning);
                 msgBox.setText("Incorrect password");
                 msgBox.exec();
             }
         }
-        else if (wantsToSign == "Employee")
+        else if (employeesLogin.contains(chosenLogin))
         {
-            if (enteredPassword == correctPassword)
+            if (enteredPassword == employees[chosenLogin].getPassword())
             {
-                signedEmployee = &employees[foundIndex];
+                signedUserType = employees[chosenLogin].whoAmI();
+                signedEmployee = &employees[chosenLogin];
+                qDebug() << "Signed employee info:";
+                signedEmployee->info();
 
+                // info message
                 msgBox.setWindowTitle("Info message");
                 msgBox.setIcon(QMessageBox::Information);
-                msgBox.setText("Logged as: " + signedEmployee->getLogin());
+                msgBox.setText("Welcome " + signedEmployee->getLogin());
                 msgBox.exec();
 
                 // groupBox_main
@@ -550,17 +589,18 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 // groupBox_SignIn
                 ui.groupBox_SignIn->setVisible(false);
 
-                // groupBox_CustomerStuff
+                // groupBox_EmployeeStuff
                 ui.groupBox_EmployeeStuff->setVisible(true);
             }
             else
             {
-                msgBox.setWindowTitle("Info message");
+                msgBox.setWindowTitle("Warning");
                 msgBox.setIcon(QMessageBox::Warning);
                 msgBox.setText("Incorrect password");
                 msgBox.exec();
             }
         }
+        
     }
 
 }
@@ -597,7 +637,9 @@ void Pharmacy::addCustomerAccepted()
     QString login = addCustomerDialog->getLogin();
     QString password = addCustomerDialog->getPassword();
 
-    customers.push_back(Customer(name, surname, adress, login, password));
+    //customers.push_back(Customer(name, surname, adress, login, password));
+    customersLogin.push_back(login);
+    customers[login] = Customer(name, surname, adress, login, password);
     ui.comboBox_users->addItem(login);
 }
 
@@ -619,7 +661,9 @@ void Pharmacy::addPremiumCustomerAccepted()
     QString login = addPremiumCustomerDialog->getLogin();
     QString password = addPremiumCustomerDialog->getPassword();
 
-    premiumCustomers.push_back(PremiumCustomer(name, surname, adress, discount, login, password));
+    //premiumCustomers.push_back(PremiumCustomer(name, surname, adress, discount, login, password));
+    premiumCustomersLogin.push_back(login);
+    premiumCustomers[login] = PremiumCustomer(name, surname, adress, discount, login, password);
     ui.comboBox_users->addItem(login);
 }
 
@@ -638,6 +682,8 @@ void Pharmacy::addEmployeeAccepted()
     QString login = addEmployeeDialog->getLogin();
     QString password = addEmployeeDialog->getPassword();
 
-    employees.push_back(Employee(position, login, password));
+    //employees.push_back(Employee(position, login, password));
+    employeesLogin.push_back(login);
+    employees[login] = Employee(position, login, password);
     ui.comboBox_users->addItem(login);
 }
