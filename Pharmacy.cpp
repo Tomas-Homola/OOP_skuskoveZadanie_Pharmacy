@@ -345,6 +345,32 @@ bool Pharmacy::saveUsers()
     }
 }
 
+bool Pharmacy::loadProducts(QString fileName)
+{
+    return false;
+}
+
+bool Pharmacy::updateProducts()
+{
+    return false;
+}
+
+void Pharmacy::infoMessage(QString message)
+{
+    msgBox.setWindowTitle("Info message");
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.setText(message);
+    msgBox.exec();
+}
+
+void Pharmacy::warningMessage(QString message)
+{
+    msgBox.setWindowTitle("Warning");
+    msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setText("Error with saving users");
+    msgBox.exec();
+}
+
 // After START-UP
 Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
 {
@@ -396,10 +422,7 @@ void Pharmacy::closeEvent(QCloseEvent* event)
             event->accept();
         else
         {
-            msgBox.setWindowTitle("Warning");
-            msgBox.setText("Error with saving users");
-            msgBox.setIcon(QMessageBox::Warning);
-            msgBox.exec();
+            warningMessage("Error with saving users");
 
             event->ignore();
         }
@@ -458,7 +481,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
     int i = 0, foundIndex = -1;
     bool found = false;
     QString enteredPassword = ui.lineEdit_Password->text(); // temporary string pre ulozenie zadaneho hesla
-    QString correctPassword = "";
+    //QString correctPassword = "";
     QString chosenLogin = ui.comboBox_users->currentText();
 
     ui.lineEdit_Password->setText(""); // vymazanie zadaneho hesla z lineEditu
@@ -472,10 +495,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
         {
             signedUserType = admin.whoAmI();
 
-            msgBox.setWindowTitle("Info message");
-            msgBox.setIcon(QMessageBox::Information);
-            msgBox.setText("Logged as: " + admin.getLogin());
-            msgBox.exec();
+            infoMessage("Logged as: " + admin.getLogin());
 
             // groupBox_main
             ui.label_SignedInAs->setText("Signed in as: " + admin.getLogin());
@@ -490,10 +510,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
         }
         else
         {
-            msgBox.setWindowTitle("Warning");
-            msgBox.setIcon(QMessageBox::Warning);
-            msgBox.setText("Incorrect password");
-            msgBox.exec();
+            warningMessage("Incorrect password");
         }
     }
     else // ak sa nechce prihlasit admin, ide sa prihlasit nejaky user
@@ -508,10 +525,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 signedCustomer->info();
 
                 // info message
-                msgBox.setWindowTitle("Info message");
-                msgBox.setIcon(QMessageBox::Information);
-                msgBox.setText("Welcome " + signedCustomer->getLogin());
-                msgBox.exec();
+                infoMessage("Welcome " + signedCustomer->getLogin());
 
                 // groupBox_main
                 ui.label_SignedInAs->setText("Signed in as: " + signedCustomer->getLogin());
@@ -526,10 +540,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
             }
             else
             {
-                msgBox.setWindowTitle("Warning");
-                msgBox.setIcon(QMessageBox::Warning);
-                msgBox.setText("Incorrect password");
-                msgBox.exec();
+                warningMessage("Incorrect password");
             }
         }
         else if (premiumCustomers.keys().contains(chosenLogin))
@@ -542,10 +553,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 signedPremiumCustomer->info();
 
                 // info message
-                msgBox.setWindowTitle("Info message");
-                msgBox.setIcon(QMessageBox::Information);
-                msgBox.setText("Welcome " + signedPremiumCustomer->getLogin());
-                msgBox.exec();
+                infoMessage("Welcome " + signedPremiumCustomer->getLogin());
 
                 // groupBox_main
                 ui.label_SignedInAs->setText("Signed in as: " + signedPremiumCustomer->getLogin());
@@ -560,10 +568,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
             }
             else
             {
-                msgBox.setWindowTitle("Warning");
-                msgBox.setIcon(QMessageBox::Warning);
-                msgBox.setText("Incorrect password");
-                msgBox.exec();
+                warningMessage("Incorrect password");
             }
         }
         else if (employees.keys().contains(chosenLogin))
@@ -576,10 +581,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 signedEmployee->info();
 
                 // info message
-                msgBox.setWindowTitle("Info message");
-                msgBox.setIcon(QMessageBox::Information);
-                msgBox.setText("Welcome " + signedEmployee->getLogin());
-                msgBox.exec();
+                infoMessage("Welcome " + signedEmployee->getLogin());
 
                 // groupBox_main
                 ui.label_SignedInAs->setText("Signed in as: " + signedEmployee->getLogin());
@@ -594,10 +596,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
             }
             else
             {
-                msgBox.setWindowTitle("Warning");
-                msgBox.setIcon(QMessageBox::Warning);
-                msgBox.setText("Incorrect password");
-                msgBox.exec();
+                warningMessage("Incorrect password");
             }
         }
         
@@ -641,10 +640,7 @@ void Pharmacy::addCustomerAccepted()
     //customersLogin.push_back(login);
     if (customers.keys().contains(login) || premiumCustomers.keys().contains(login) || employees.keys().contains(login))
     {
-        msgBox.setWindowTitle("Warning");
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setText("Login already in use");
-        msgBox.exec();
+        warningMessage("Login already in use");
     }
     else
     {
@@ -678,10 +674,7 @@ void Pharmacy::addPremiumCustomerAccepted()
 
     if (customers.keys().contains(login) || premiumCustomers.keys().contains(login) || employees.keys().contains(login))
     {
-        msgBox.setWindowTitle("Warning");
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setText("Login already in use");
-        msgBox.exec();
+        warningMessage("Login already in use");
     }
     else
     {
@@ -712,10 +705,7 @@ void Pharmacy::addEmployeeAccepted()
 
     if (customers.keys().contains(login) || premiumCustomers.keys().contains(login) || employees.keys().contains(login))
     {
-        msgBox.setWindowTitle("Warning");
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setText("Login already in use");
-        msgBox.exec();
+        warningMessage("Login already in use");
     }
     else
     {

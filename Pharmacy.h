@@ -6,10 +6,10 @@
 #include "Customer.h"
 #include "PremiumCustomer.h"
 #include "Employee.h"
+#include "Product.h"
 #include "AddCustomerDialog.h"
 #include "AddPremiumCustomerDialog.h"
 #include "AddEmployeeDialog.h"
-#include <any>
 
 class Pharmacy : public QMainWindow
 {
@@ -40,6 +40,8 @@ private:
     QMap<QString, PremiumCustomer> premiumCustomers;
     QMap<QString, Employee> employees;
 
+    QVector<Product> products;
+
     
     // nacitanie dat uzivatelov
     bool loadAdmin();
@@ -54,6 +56,14 @@ private:
     bool savePremiumCustomers();
     bool saveEmployees();
     bool saveUsers();
+
+    // nacitanie produktov
+    bool loadProducts(QString fileName);
+    bool updateProducts();
+
+    // other
+    void infoMessage(QString message);
+    void warningMessage(QString message);
 
 private slots:
     
