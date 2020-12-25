@@ -185,23 +185,6 @@ bool Pharmacy::saveCustomers()
     {
         QTextStream toFile(&customersFile);
 
-        /*if (!customers.isEmpty())
-        {
-            qDebug() << "Saving customers...";
-            QTextStream toFile(&customersFile);
-
-            int i = 0;
-            for (i = 0; i < customers.size(); i++)
-            {
-                if (i == (customers.size() - 1))
-                    toFile << customers[i].getName() << "\n" << customers[i].getSurname() << "\n" << customers[i].getAdress() << "\n" << customers[i].getLogin() << "\n" << customers[i].getPassword();
-                else
-                    toFile << customers[i].getName() << "\n" << customers[i].getSurname() << "\n" << customers[i].getAdress() << "\n" << customers[i].getLogin() << "\n" << customers[i].getPassword() << "\n";
-            }
-            qDebug() << "Customers to save:" << customers.size();
-            qDebug() << "Customers saved:" << i << "\n";
-        }*/
-
         if (!customers.isEmpty())
         {
             qDebug() << "Saving customers...";
@@ -234,23 +217,6 @@ bool Pharmacy::savePremiumCustomers()
     }
     else
     {
-        /*if (!premiumCustomers.isEmpty())
-        {
-            qDebug() << "Saving premium customers...";
-            QTextStream toFile(&premiumCustomersFile);
-
-            int i = 0;
-            for (i = 0; i < premiumCustomers.size(); i++)
-            {
-                if (i == (premiumCustomers.size() - 1))
-                    toFile << premiumCustomers[i].getName() << "\n" << premiumCustomers[i].getSurname() << "\n" << premiumCustomers[i].getAdress() << "\n" << premiumCustomers[i].getDiscount() << "\n" << premiumCustomers[i].getLogin() << "\n" << premiumCustomers[i].getPassword();
-                else
-                    toFile << premiumCustomers[i].getName() << "\n" << premiumCustomers[i].getSurname() << "\n" << premiumCustomers[i].getAdress() << "\n" << premiumCustomers[i].getDiscount() << "\n" << premiumCustomers[i].getLogin() << "\n" << premiumCustomers[i].getPassword() << "\n";
-            }
-            qDebug() << "Premium customers to save:" << premiumCustomers.size();
-            qDebug() << "Premium customers saved:" << i << "\n";
-        }*/
-
         if (!premiumCustomers.isEmpty())
         {
             qDebug() << "Saving premium customers...";
@@ -283,23 +249,6 @@ bool Pharmacy::saveEmployees()
     }
     else
     {
-        /*if (!employees.isEmpty())
-        {
-            qDebug() << "Saving employees...";
-            QTextStream out4(&employeesFile);
-
-            int i = 0;
-            for (i = 0; i < employees.size(); i++)
-            {
-                if (i == (employees.size() - 1))
-                    out4 << employees[i].getPosition() << "\n" << employees[i].getLogin() << "\n" << employees[i].getPassword();
-                else
-                    out4 << employees[i].getPosition() << "\n" << employees[i].getLogin() << "\n" << employees[i].getPassword() << "\n";
-            }
-            qDebug() << "Employees to save:" << employees.size();
-            qDebug() << "Saved employees:" << i << "\n";
-        }*/
-
         if (!employees.isEmpty())
         {
             qDebug() << "Saving employees...";
@@ -422,44 +371,47 @@ bool Pharmacy::updateProducts()
 
 void Pharmacy::showProductsInCatalog(QVector<Product>& productsToShow)
 {
-    ui.tableWidget_Catalog->clear();
+    ui.tableWidget_Catalog->clearContents();
 
     ui.tableWidget_Catalog->setRowCount(productsToShow.size());
 
-    QStringList header = { "ID", "Name", "Price", "Quantity" };
-    ui.tableWidget_Catalog->setHorizontalHeaderLabels(header); // nastavenie headeru
+    //QStringList header = { "ID", "Name", "Price", "Quantity" };
+    //ui.tableWidget_Catalog->setHorizontalHeaderLabels(header); // nastavenie headeru
+
+    //ui.tableWidget_Catalog->setColumnWidth(0, 5);
+    //ui.tableWidget_Catalog->setColumnWidth(1, 400);
+    //ui.tableWidget_Catalog->setColumnWidth(2, 10);
+    //ui.tableWidget_Catalog->setColumnWidth(3, 10);
 
     if (!productsToShow.isEmpty())
     {
         qDebug() << "\nVypisovanie najdenych produktov...\n";
-        int i = 0;
-        for (i = 0; i < productsToShow.size(); i++)
+        for (int i = 0; i < productsToShow.size(); i++)
         {
-            //QTableWidgetItem* ID = new QTableWidgetItem();
-            //QTableWidgetItem* name = new QTableWidgetItem();
-            //QTableWidgetItem* price = new QTableWidgetItem();
-            //QTableWidgetItem* quantity = new QTableWidgetItem();
+            QTableWidgetItem* ID = new QTableWidgetItem();
+            QTableWidgetItem* name = new QTableWidgetItem();
+            QTableWidgetItem* price = new QTableWidgetItem();
+            QTableWidgetItem* quantity = new QTableWidgetItem();
 
-            //ID->setText(QString("%1").arg(productsToShow[i].getID()));
-            //qDebug() << "Error get product name:" << productsToShow[i].getProductName();
-            //name->setText(QString(productsToShow[i].getProductName()));
-            //price->setText(QString("%1 EUR").arg(productsToShow[i].getPrice()));
-            /*if (signedUserType == "Customer")
-            {
-                price->setText(QString("%1 EUR").arg(productsToShow[i].getPrice()));
-            }
-            else if (signedUserType == "PremiumCustomer")
+            ID->setText(QString("%1").arg(productsToShow[i].getID()).leftJustified(3, ' '));
+            name->setText(QString(productsToShow[i].getProductName()));
+
+            if (signedUserType == "PremiumCustomer")
             {
                 double afterDiscount = (1.0 - (double(signedPremiumCustomer->getDiscount() / 100))) * productsToShow[i].getPrice();
                 price->setText(QString("%1 EUR").arg(afterDiscount));
-            }*/
+            }
+            else if (signedUserType == "Customer")
+            {
+                price->setText(QString("%1 EUR").arg(productsToShow[i].getPrice()));
+            }
 
-            //quantity->setText(QString("%1 x").arg(productsToShow[i].getQuantity()));
+            quantity->setText(QString("%1 x").arg(productsToShow[i].getQuantity()).rightJustified(4, ' '));
 
-            //ui.tableWidget_Catalog->setItem(i, 0, ID);
-            //ui.tableWidget_Catalog->setItem(i, 1, name);
-            //ui.tableWidget_Catalog->setItem(i, 2, price);
-            //ui.tableWidget_Catalog->setItem(i, 3, quantity);
+            ui.tableWidget_Catalog->setItem(i, 0, ID);
+            ui.tableWidget_Catalog->setItem(i, 1, name);
+            ui.tableWidget_Catalog->setItem(i, 2, price);
+            ui.tableWidget_Catalog->setItem(i, 3, quantity);
         }
     }
    
@@ -492,16 +444,26 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
     // groupBox_Main
     ui.pushButton_SignOut->setVisible(false);
 
+
     // groupBox_SignIn
     ui.groupBox_SignIn->setVisible(false);
+
 
     // groupBoxi pre Users Stuff
     ui.groupBox_AdminStuff->setVisible(false);
     ui.groupBox_CustomerStuff->setVisible(false);
     ui.groupBox_EmployeeStuff->setVisible(false);
 
+
     // groupBox_Products
-    ui.groupBox_Products->setEnabled(false);
+    ui.groupBox_Products->setVisible(false);
+
+    QStringList header = { "ID", "Name", "Price", "Quantity" };
+    ui.tableWidget_Catalog->setHorizontalHeaderLabels(header); // nastavenie headeru
+    ui.tableWidget_Catalog->setColumnWidth(0, 2);
+    ui.tableWidget_Catalog->setColumnWidth(1, 280);
+    ui.tableWidget_Catalog->setColumnWidth(2, 75);
+    ui.tableWidget_Catalog->setColumnWidth(3, 75);
 
     //qDebug() << QCryptographicHash::hash(QString("admin").toStdString().c_str(), QCryptographicHash::Sha1).toHex();
     
@@ -568,7 +530,7 @@ void Pharmacy::on_pushButton_SignOut_clicked()
     ui.groupBox_EmployeeStuff->setVisible(false);
 
     // groupBox_Products
-    ui.groupBox_Products->setEnabled(false);
+    ui.groupBox_Products->setVisible(false);
 
 }
 
@@ -648,7 +610,8 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 ui.groupBox_CustomerStuff->setVisible(true);
 
                 // groupBox_Products
-                ui.groupBox_Products->setEnabled(true);
+                ui.groupBox_Products->setVisible(true);
+                showProductsInCatalog(products);
             }
             else
             {
@@ -679,7 +642,8 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 ui.groupBox_CustomerStuff->setVisible(true);
 
                 // groupBox_Products
-                ui.groupBox_Products->setEnabled(true);
+                ui.groupBox_Products->setVisible(true);
+                showProductsInCatalog(products);
             }
             else
             {
