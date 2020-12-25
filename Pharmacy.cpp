@@ -1,17 +1,6 @@
 #include "Pharmacy.h"
 
-/*
-QString adminPassword = "adminpassword";
-    qDebug() << "Before encryption:" << adminPassword << "\n";
-
-    QString encrypted1 = QCryptographicHash::hash(adminPassword.toStdString().c_str(), QCryptographicHash::Sha1).toHex();
-    QString encrypted2 = QCryptographicHash::hash(adminPassword.toStdString().c_str(), QCryptographicHash::Sha1).toHex();
-
-    qDebug() << "After encryption1" << encrypted1;
-    qDebug() << "After encryption2" << encrypted2;
-
-*/
-
+// nacitavanie dat uzivatelov
 bool Pharmacy::loadAdmin()
 {
     QFile adminFile("_usersData/admin.txt");
@@ -161,6 +150,7 @@ bool Pharmacy::loadUsers()
     }
 }
 
+// ukladanie dat uzivatelov
 bool Pharmacy::saveAdmin()
 {
     QFile adminFile("_usersData/admin.txt");
@@ -345,14 +335,134 @@ bool Pharmacy::saveUsers()
     }
 }
 
-bool Pharmacy::loadProducts(QString fileName)
+// produkty
+bool Pharmacy::loadProducts()
 {
-    return false;
+    QFile productsFile("_products/defaultProducts.txt");
+
+    if (!productsFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Error with opening products file\n";
+        return false;
+    }
+    else
+    {
+        QTextStream fromFile(&productsFile);
+        fromFile.setCodec("UTF-8");
+
+        while (!fromFile.atEnd())
+        {
+            int ID = fromFile.readLine().toInt();
+            QString productName = fromFile.readLine();
+            double price = fromFile.readLine().toDouble();
+            int quantity = fromFile.readLine().toInt();
+
+            products.push_back(Product(ID, productName, price, quantity));
+        }
+
+        productsFile.close();
+
+        if (products.isEmpty())
+        {
+            qDebug() << "No products loaded\n";
+            return false;
+        }
+        else
+        {
+            qDebug() << "Number of products loaded:" << products.size();
+            return true;
+        }
+    }
 }
 
 bool Pharmacy::updateProducts()
 {
-    return false;
+    QString fileName = QFileDialog::getOpenFileName(this, "Open File", "", tr("Txt File (*.txt);;All files (*.)"));
+
+    if (fileName.isEmpty())
+        return false;
+
+    qDebug() << "File name:" << fileName;
+
+    QFile newProductsFile(fileName);
+
+    if (!newProductsFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Error with opening new products text file";
+        return false;
+    }
+
+    products.clear(); // vymazanie starych produktov
+    QTextStream fromFile(&newProductsFile);
+
+    while (!fromFile.atEnd())
+    {
+        int ID = fromFile.readLine().toInt();
+        QString productName = fromFile.readLine();
+        double price = fromFile.readLine().toDouble();
+        int quantity = fromFile.readLine().toInt();
+
+        products.push_back(Product(ID, productName, price, quantity));
+    }
+
+    newProductsFile.close();
+
+    if (products.isEmpty())
+    {
+        qDebug() << "No new products were loaded\n";
+        return false;
+    }
+    else
+    {
+        qDebug() << "Number of new products:" << products.size();
+        return true;
+    }
+
+}
+
+void Pharmacy::showProductsInCatalog(QVector<Product>& productsToShow)
+{
+    ui.tableWidget_Catalog->clear();
+
+    ui.tableWidget_Catalog->setRowCount(productsToShow.size());
+
+    QStringList header = { "ID", "Name", "Price", "Quantity" };
+    ui.tableWidget_Catalog->setHorizontalHeaderLabels(header); // nastavenie headeru
+
+    if (!productsToShow.isEmpty())
+    {
+        qDebug() << "\nVypisovanie najdenych produktov...\n";
+        int i = 0;
+        for (i = 0; i < productsToShow.size(); i++);
+        {
+            //QTableWidgetItem* ID = new QTableWidgetItem();
+            //QTableWidgetItem* name = new QTableWidgetItem();
+            //QTableWidgetItem* price = new QTableWidgetItem();
+            //QTableWidgetItem* quantity = new QTableWidgetItem();
+
+            //ID->setText(QString("%1").arg(productsToShow[i].getID()));
+            //qDebug() << "Error get product name:" << productsToShow[i].getProductName();
+            //name->setText(QString(productsToShow[i].getProductName()));
+            //price->setText(QString("%1 EUR").arg(productsToShow[i].getPrice()));
+            /*if (signedUserType == "Customer")
+            {
+                price->setText(QString("%1 EUR").arg(productsToShow[i].getPrice()));
+            }
+            else if (signedUserType == "PremiumCustomer")
+            {
+                double afterDiscount = (1.0 - (double(signedPremiumCustomer->getDiscount() / 100))) * productsToShow[i].getPrice();
+                price->setText(QString("%1 EUR").arg(afterDiscount));
+            }*/
+
+            //quantity->setText(QString("%1 x").arg(productsToShow[i].getQuantity()));
+
+            //ui.tableWidget_Catalog->setItem(i, 0, ID);
+            //ui.tableWidget_Catalog->setItem(i, 1, name);
+            //ui.tableWidget_Catalog->setItem(i, 2, price);
+            //ui.tableWidget_Catalog->setItem(i, 3, quantity);
+        }
+    }
+   
 }
 
 void Pharmacy::infoMessage(QString message)
@@ -376,6 +486,9 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
 {
     ui.setupUi(this);
 
+    QTextCodec* codec = QTextCodec::codecForName("UTF-8");
+    QTextCodec::setCodecForLocale(codec);
+
     // groupBox_Main
     ui.pushButton_SignOut->setVisible(false);
 
@@ -387,6 +500,9 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
     ui.groupBox_CustomerStuff->setVisible(false);
     ui.groupBox_EmployeeStuff->setVisible(false);
 
+    // groupBox_Products
+    ui.groupBox_Products->setEnabled(false);
+
     //qDebug() << QCryptographicHash::hash(QString("admin").toStdString().c_str(), QCryptographicHash::Sha1).toHex();
     
     if (loadUsers())
@@ -394,22 +510,13 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
     else
         qDebug() << "Error loading users";
     
-    
-    qDebug() << "New indexing...\n";
-    for (int i = 0; i < customers.size(); i++)
-    {
-        customers[customers.keys()[i]].info();
-    }
+    if (loadProducts())
+        qDebug() << "Products loaded\n";
+    else
+        qDebug() << "Error loading products\n";
 
-    for (int i = 0; i < premiumCustomers.size(); i++)
-    {
-        premiumCustomers[premiumCustomers.keys()[i]].info();
-    }
-
-    for (int i = 0; i < employees.size(); i++)
-    {
-        employees[employees.keys()[i]].info();
-    }
+    //for (int i = 0; i < products.size(); i++)
+       // products[i].info();
    
 }
 
@@ -459,6 +566,10 @@ void Pharmacy::on_pushButton_SignOut_clicked()
     ui.groupBox_AdminStuff->setVisible(false);
     ui.groupBox_CustomerStuff->setVisible(false);
     ui.groupBox_EmployeeStuff->setVisible(false);
+
+    // groupBox_Products
+    ui.groupBox_Products->setEnabled(false);
+
 }
 
 void Pharmacy::on_pushButton_PrintUsers_clicked()
@@ -478,10 +589,8 @@ void Pharmacy::on_pushButton_PrintUsers_clicked()
 // groupBox_SignIn
 void Pharmacy::on_pushButton_SignInConfirm_clicked()
 {
-    int i = 0, foundIndex = -1;
     bool found = false;
     QString enteredPassword = ui.lineEdit_Password->text(); // temporary string pre ulozenie zadaneho hesla
-    //QString correctPassword = "";
     QString chosenLogin = ui.comboBox_users->currentText();
 
     ui.lineEdit_Password->setText(""); // vymazanie zadaneho hesla z lineEditu
@@ -537,6 +646,9 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
 
                 // groupBox_CustomerStuff
                 ui.groupBox_CustomerStuff->setVisible(true);
+
+                // groupBox_Products
+                ui.groupBox_Products->setEnabled(true);
             }
             else
             {
@@ -565,6 +677,9 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
 
                 // groupBox_CustomerStuff
                 ui.groupBox_CustomerStuff->setVisible(true);
+
+                // groupBox_Products
+                ui.groupBox_Products->setEnabled(true);
             }
             else
             {
@@ -636,8 +751,6 @@ void Pharmacy::addCustomerAccepted()
     QString login = addCustomerDialog->getLogin();
     QString password = addCustomerDialog->getPassword();
 
-    //customers.push_back(Customer(name, surname, adress, login, password));
-    //customersLogin.push_back(login);
     if (customers.keys().contains(login) || premiumCustomers.keys().contains(login) || employees.keys().contains(login))
     {
         warningMessage("Login already in use");
@@ -669,9 +782,6 @@ void Pharmacy::addPremiumCustomerAccepted()
     QString login = addPremiumCustomerDialog->getLogin();
     QString password = addPremiumCustomerDialog->getPassword();
 
-    //premiumCustomers.push_back(PremiumCustomer(name, surname, adress, discount, login, password));
-    //premiumCustomersLogin.push_back(login);
-
     if (customers.keys().contains(login) || premiumCustomers.keys().contains(login) || employees.keys().contains(login))
     {
         warningMessage("Login already in use");
@@ -700,9 +810,6 @@ void Pharmacy::addEmployeeAccepted()
     QString login = addEmployeeDialog->getLogin();
     QString password = addEmployeeDialog->getPassword();
 
-    //employees.push_back(Employee(position, login, password));
-    //employeesLogin.push_back(login);
-
     if (customers.keys().contains(login) || premiumCustomers.keys().contains(login) || employees.keys().contains(login))
     {
         warningMessage("Login already in use");
@@ -713,4 +820,34 @@ void Pharmacy::addEmployeeAccepted()
         ui.comboBox_users->addItem(login);
     }
     
+}
+
+void Pharmacy::on_pushButton_UpdateProducts_clicked()
+{
+    if (updateProducts())
+        infoMessage("Products successfully updated");
+    else
+        warningMessage("Error with updating products");
+}
+
+void Pharmacy::on_lineEdit_SearchBy_textChanged()
+{
+    foundProducts.clear();
+
+    QString toSearch = ui.lineEdit_SearchBy->text();
+
+    bool productFound = false;
+
+    for (int i = 0; i < products.size(); i++)
+    {
+        productFound = products[i].getProductName().contains(toSearch, Qt::CaseInsensitive);
+
+        if (productFound)
+        {
+            foundProducts.push_back(products[i]);
+            products[i].info();
+        }
+    }
+
+    showProductsInCatalog(foundProducts);
 }

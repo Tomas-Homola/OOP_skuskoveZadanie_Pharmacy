@@ -41,6 +41,7 @@ private:
     QMap<QString, Employee> employees;
 
     QVector<Product> products;
+    QVector<Product> foundProducts;
 
     
     // nacitanie dat uzivatelov
@@ -57,9 +58,11 @@ private:
     bool saveEmployees();
     bool saveUsers();
 
-    // nacitanie produktov
-    bool loadProducts(QString fileName);
+    // produkty
+    bool loadProducts();
     bool updateProducts();
+
+    void showProductsInCatalog(QVector<Product>& productsToShow);
 
     // other
     void infoMessage(QString message);
@@ -87,5 +90,10 @@ private slots:
     
     void on_pushButton_AddEmployee_clicked();
     void addEmployeeAccepted();
+
+    void on_pushButton_UpdateProducts_clicked();
+
+    // groupBox_Catalog
+    void on_lineEdit_SearchBy_textChanged();
 
 };
