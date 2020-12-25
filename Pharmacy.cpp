@@ -433,7 +433,7 @@ void Pharmacy::showProductsInCatalog(QVector<Product>& productsToShow)
     {
         qDebug() << "\nVypisovanie najdenych produktov...\n";
         int i = 0;
-        for (i = 0; i < productsToShow.size(); i++);
+        for (i = 0; i < productsToShow.size(); i++)
         {
             //QTableWidgetItem* ID = new QTableWidgetItem();
             //QTableWidgetItem* name = new QTableWidgetItem();
