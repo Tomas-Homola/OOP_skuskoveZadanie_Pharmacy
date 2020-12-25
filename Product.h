@@ -1,7 +1,5 @@
 #pragma once
 
-#include <qstring.h>
-
 class Product
 {
 private:
@@ -23,5 +21,10 @@ public:
 	void setProductName(QString newProductName) { productName = newProductName; }
 	void setPrice(double newPrice) { price = newPrice; }
 	void setQuantity(int newQuantity) { quantity = newQuantity; }
+
+	void info()
+	{
+		qDebug() << "ID:" << ID << "Product name:" << productName << "Price:" << price << "Quantity:" << quantity << "\n";
+	}
 
 };
