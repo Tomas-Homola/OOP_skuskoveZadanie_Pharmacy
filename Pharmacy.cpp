@@ -375,17 +375,9 @@ void Pharmacy::showProductsInCatalog(QVector<Product>& productsToShow)
 
     ui.tableWidget_Catalog->setRowCount(productsToShow.size());
 
-    //QStringList header = { "ID", "Name", "Price", "Quantity" };
-    //ui.tableWidget_Catalog->setHorizontalHeaderLabels(header); // nastavenie headeru
-
-    //ui.tableWidget_Catalog->setColumnWidth(0, 5);
-    //ui.tableWidget_Catalog->setColumnWidth(1, 400);
-    //ui.tableWidget_Catalog->setColumnWidth(2, 10);
-    //ui.tableWidget_Catalog->setColumnWidth(3, 10);
-
     if (!productsToShow.isEmpty())
     {
-        qDebug() << "\nVypisovanie najdenych produktov...\n";
+        //qDebug() << "\nVypisovanie najdenych produktov...\n";
         for (int i = 0; i < productsToShow.size(); i++)
         {
             QTableWidgetItem* ID = new QTableWidgetItem();
@@ -398,12 +390,15 @@ void Pharmacy::showProductsInCatalog(QVector<Product>& productsToShow)
 
             if (signedUserType == "PremiumCustomer")
             {
-                double afterDiscount = (1.0 - (double(signedPremiumCustomer->getDiscount() / 100))) * productsToShow[i].getPrice();
+                double afterDiscount = (1.0 - (double(signedPremiumCustomer->getDiscount()) / 100)) * productsToShow[i].getPrice();
                 price->setText(QString("%1 EUR").arg(afterDiscount));
+                qDebug() << "testing discount:" << afterDiscount;
+                qDebug() << "Discount...\n" << price->text();
             }
             else if (signedUserType == "Customer")
             {
                 price->setText(QString("%1 EUR").arg(productsToShow[i].getPrice()));
+                qDebug() << "No discount...\n" << price->text();
             }
 
             quantity->setText(QString("%1 x").arg(productsToShow[i].getQuantity()).rightJustified(4, ' '));
@@ -456,7 +451,7 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
 
 
     // groupBox_Products
-    ui.groupBox_Products->setVisible(false);
+    ui.groupBox_Products->setEnabled(false);
 
     QStringList header = { "ID", "Name", "Price", "Quantity" };
     ui.tableWidget_Catalog->setHorizontalHeaderLabels(header); // nastavenie headeru
@@ -530,7 +525,7 @@ void Pharmacy::on_pushButton_SignOut_clicked()
     ui.groupBox_EmployeeStuff->setVisible(false);
 
     // groupBox_Products
-    ui.groupBox_Products->setVisible(false);
+    ui.groupBox_Products->setEnabled(false);
 
 }
 
@@ -610,7 +605,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 ui.groupBox_CustomerStuff->setVisible(true);
 
                 // groupBox_Products
-                ui.groupBox_Products->setVisible(true);
+                ui.groupBox_Products->setEnabled(true);
                 showProductsInCatalog(products);
             }
             else
@@ -642,7 +637,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 ui.groupBox_CustomerStuff->setVisible(true);
 
                 // groupBox_Products
-                ui.groupBox_Products->setVisible(true);
+                ui.groupBox_Products->setEnabled(true);
                 showProductsInCatalog(products);
             }
             else
