@@ -2,14 +2,14 @@
 
 #include "Customer.h"
 
-class PremiumCustomer : public Customer//, public User
+class PremiumCustomer : public Customer
 {
 private:
 	int discount = -1;
 
 public:
 	PremiumCustomer() : Customer() {}
-	PremiumCustomer(QString name, QString surname, QString adress, int discount, QString login, QString password) : Customer(name, surname, adress, login, password) { this->discount = discount; }
+	PremiumCustomer(QString name, QString surname, QString adress, double totalMoneySpent, int discount, QString login, QString password) : Customer(name, surname, adress, totalMoneySpent, login, password) { this->discount = discount; }
 
 	int getDiscount() { return discount; }
 
