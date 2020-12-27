@@ -43,12 +43,13 @@ bool Pharmacy::loadCustomers()
             QString name = fromFile.readLine();
             QString surname = fromFile.readLine();
             QString adress = fromFile.readLine();
+            double totalMoneySpent = fromFile.readLine().toDouble();
             QString login = fromFile.readLine();
             QString password = fromFile.readLine();
 
             //customers.push_back(Customer(name, surname, adress, login, password));
             //customersLogin.push_back(login);
-            customers[login] = Customer(name, surname, adress, login, password);
+            customers[login] = Customer(name, surname, adress, totalMoneySpent, login, password);
             ui.comboBox_users->addItem(login);
 
         }
@@ -82,13 +83,14 @@ bool Pharmacy::loadPremiumCustomers()
             QString name = fromFile.readLine();
             QString surname = fromFile.readLine();
             QString adress = fromFile.readLine();
+            double totalMoneySpent = fromFile.readLine().toDouble();
             int discount = fromFile.readLine().toInt();
             QString login = fromFile.readLine();
             QString password = fromFile.readLine();
 
             //premiumCustomers.push_back(PremiumCustomer(name, surname, adress, discount, login, password));
             //premiumCustomersLogin.push_back(login);
-            premiumCustomers[login] = PremiumCustomer(name, surname, adress, discount, login, password);
+            premiumCustomers[login] = PremiumCustomer(name, surname, adress, totalMoneySpent, discount, login, password);
             ui.comboBox_users->addItem(login);
         }
         premiumCustomersFile.close();
@@ -194,9 +196,23 @@ bool Pharmacy::saveCustomers()
             for (i = 0; i < customers.size(); i++)
             {
                 if (i == (customers.size() - 1))
-                    toFile << customers[customers.keys()[i]].getName() << "\n" << customers[customers.keys()[i]].getSurname() << "\n" << customers[customers.keys()[i]].getAdress() << "\n" << customers[customers.keys()[i]].getLogin() << "\n" << customers[customers.keys()[i]].getPassword();
+                {
+                    toFile << customers[customers.keys()[i]].getName() << "\n";
+                    toFile << customers[customers.keys()[i]].getSurname() << "\n";
+                    toFile << customers[customers.keys()[i]].getAdress() << "\n";
+                    toFile << customers[customers.keys()[i]].getTotalMoneySpent() << "\n";
+                    toFile << customers[customers.keys()[i]].getLogin() << "\n";
+                    toFile << customers[customers.keys()[i]].getPassword();
+                }
                 else
-                    toFile << customers[customers.keys()[i]].getName() << "\n" << customers[customers.keys()[i]].getSurname() << "\n" << customers[customers.keys()[i]].getAdress() << "\n" << customers[customers.keys()[i]].getLogin() << "\n" << customers[customers.keys()[i]].getPassword() << "\n";
+                {
+                    toFile << customers[customers.keys()[i]].getName() << "\n";
+                    toFile << customers[customers.keys()[i]].getSurname() << "\n";
+                    toFile << customers[customers.keys()[i]].getAdress() << "\n";
+                    toFile << customers[customers.keys()[i]].getTotalMoneySpent() << "\n";
+                    toFile << customers[customers.keys()[i]].getLogin() << "\n";
+                    toFile << customers[customers.keys()[i]].getPassword() << "\n";
+                }
             }
             qDebug() << "Customers to save:" << customers.size();
             qDebug() << "Customers saved:" << i << "\n";
@@ -226,9 +242,25 @@ bool Pharmacy::savePremiumCustomers()
             for (i = 0; i < premiumCustomers.size(); i++)
             {
                 if (i == (premiumCustomers.size() - 1))
-                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getName() << "\n" << premiumCustomers[premiumCustomers.keys()[i]].getSurname() << "\n" << premiumCustomers[premiumCustomers.keys()[i]].getAdress() << "\n" << premiumCustomers[premiumCustomers.keys()[i]].getDiscount() << "\n" << premiumCustomers[premiumCustomers.keys()[i]].getLogin() << "\n" << premiumCustomers[premiumCustomers.keys()[i]].getPassword();
+                {
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getName() << "\n";
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getSurname() << "\n";
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getAdress() << "\n";
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getTotalMoneySpent() << "\n";
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getDiscount() << "\n";
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getLogin() << "\n";
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getPassword();
+                }
                 else
-                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getName() << "\n" << premiumCustomers[premiumCustomers.keys()[i]].getSurname() << "\n" << premiumCustomers[premiumCustomers.keys()[i]].getAdress() << "\n" << premiumCustomers[premiumCustomers.keys()[i]].getDiscount() << "\n" << premiumCustomers[premiumCustomers.keys()[i]].getLogin() << "\n" << premiumCustomers[premiumCustomers.keys()[i]].getPassword() << "\n";
+                {
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getName() << "\n";
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getSurname() << "\n";
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getAdress() << "\n";
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getTotalMoneySpent() << "\n";
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getDiscount() << "\n";
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getLogin() << "\n";
+                    toFile << premiumCustomers[premiumCustomers.keys()[i]].getPassword() << "\n";
+                }
             }
             qDebug() << "Premium customers to save:" << premiumCustomers.size();
             qDebug() << "Premium customers saved:" << i << "\n";
@@ -299,14 +331,24 @@ bool Pharmacy::loadProducts()
         QTextStream fromFile(&productsFile);
         fromFile.setCodec("UTF-8");
 
+        QString header = fromFile.readLine();
+
+        if (header != "#PRODUCTS") // ak subor nema spravny header, tak ho nezoberie
+        {
+            qDebug() << "Incorect products file\n";
+            productsFile.close();
+            return false;
+        }
+
         while (!fromFile.atEnd())
         {
             int ID = fromFile.readLine().toInt();
             QString productName = fromFile.readLine();
+            QString productDescription = fromFile.readLine();
             double price = fromFile.readLine().toDouble();
             int quantity = fromFile.readLine().toInt();
 
-            products.push_back(Product(ID, productName, price, quantity));
+            products.push_back(Product(ID, productName, productDescription, price, quantity));
         }
 
         productsFile.close();
@@ -340,18 +382,30 @@ bool Pharmacy::updateProducts()
         qDebug() << "Error with opening new products text file";
         return false;
     }
+    
+    QTextStream fromFile(&newProductsFile);
+    fromFile.setCodec("UTF-8"); // ani neviem, ci toto vobec funguje
+
+    QString header = fromFile.readLine();
+
+    if (header != "#PRODUCTS")
+    {
+        qDebug() << "Incorect products file\n";
+        newProductsFile.close();
+        return false;
+    }
 
     products.clear(); // vymazanie starych produktov
-    QTextStream fromFile(&newProductsFile);
 
     while (!fromFile.atEnd())
     {
         int ID = fromFile.readLine().toInt();
         QString productName = fromFile.readLine();
+        QString productDescription = fromFile.readLine();
         double price = fromFile.readLine().toDouble();
         int quantity = fromFile.readLine().toInt();
 
-        products.push_back(Product(ID, productName, price, quantity));
+        products.push_back(Product(ID, productName, productDescription, price, quantity));
     }
 
     newProductsFile.close();
@@ -444,11 +498,11 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
     ui.groupBox_SignIn->setVisible(false);
 
 
-    // groupBoxi pre Users Stuff
-    ui.groupBox_AdminStuff->setVisible(false);
-    ui.groupBox_CustomerStuff->setVisible(false);
-    ui.groupBox_EmployeeStuff->setVisible(false);
-
+    // menu pre Users Stuff
+    ui.menuAdminStuff->setEnabled(false);
+    ui.menuCustomer_Stuff->setEnabled(false);
+    ui.menuEmployee_Stuff->setEnabled(false);
+    
 
     // groupBox_Products
     ui.groupBox_Products->setEnabled(false);
@@ -507,9 +561,6 @@ void Pharmacy::on_pushButton_SignInWindow_clicked()
     // groupBox_SignIn
     ui.groupBox_SignIn->setVisible(true);
 
-    // groupBox_AdminStuff
-    ui.groupBox_AdminStuff->setVisible(false);
-
 }
 
 void Pharmacy::on_pushButton_SignOut_clicked()
@@ -520,9 +571,7 @@ void Pharmacy::on_pushButton_SignOut_clicked()
     ui.label_SignedInAs->setText("Signed out");
 
     //groupBoxi Users Stuff
-    ui.groupBox_AdminStuff->setVisible(false);
-    ui.groupBox_CustomerStuff->setVisible(false);
-    ui.groupBox_EmployeeStuff->setVisible(false);
+    ui.menuAdminStuff->setEnabled(false);
 
     // groupBox_Products
     ui.groupBox_Products->setEnabled(false);
@@ -534,10 +583,10 @@ void Pharmacy::on_pushButton_PrintUsers_clicked()
     qDebug() << admin.getLogin() << admin.getPassword();
 
     for (int i = 0; i < customers.size(); i++)
-        qDebug() << customers[customers.keys()[i]].getName() << customers[customers.keys()[i]].getSurname() << customers[customers.keys()[i]].getAdress() << customers[customers.keys()[i]].getLogin() << customers[customers.keys()[i]].getPassword();
+        qDebug() << customers[customers.keys()[i]].getName() << customers[customers.keys()[i]].getSurname() << customers[customers.keys()[i]].getAdress() << customers[customers.keys()[i]].getTotalMoneySpent() << customers[customers.keys()[i]].getLogin() << customers[customers.keys()[i]].getPassword();
 
     for (int i = 0; i < premiumCustomers.size(); i++)
-        qDebug() << premiumCustomers[premiumCustomers.keys()[i]].getName() << premiumCustomers[premiumCustomers.keys()[i]].getSurname() << premiumCustomers[premiumCustomers.keys()[i]].getAdress() << premiumCustomers[premiumCustomers.keys()[i]].getDiscount() << premiumCustomers[premiumCustomers.keys()[i]].getLogin() << premiumCustomers[premiumCustomers.keys()[i]].getPassword();
+        qDebug() << premiumCustomers[premiumCustomers.keys()[i]].getName() << premiumCustomers[premiumCustomers.keys()[i]].getSurname() << premiumCustomers[premiumCustomers.keys()[i]].getAdress() << premiumCustomers[premiumCustomers.keys()[i]].getTotalMoneySpent() << premiumCustomers[premiumCustomers.keys()[i]].getDiscount() << premiumCustomers[premiumCustomers.keys()[i]].getLogin() << premiumCustomers[premiumCustomers.keys()[i]].getPassword();
 
     for (int i = 0; i < employees.size(); i++)
         qDebug() << employees[employees.keys()[i]].getPosition() << employees[employees.keys()[i]].getLogin() << employees[employees.keys()[i]].getPassword();
@@ -572,7 +621,8 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
             ui.groupBox_SignIn->setVisible(false);
 
             // groupBox_AdminStuff
-            ui.groupBox_AdminStuff->setVisible(true);
+            //ui.groupBox_AdminStuff->setVisible(true);
+            ui.menuAdminStuff->setEnabled(true);
         }
         else
         {
@@ -602,7 +652,6 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 ui.groupBox_SignIn->setVisible(false);
 
                 // groupBox_CustomerStuff
-                ui.groupBox_CustomerStuff->setVisible(true);
 
                 // groupBox_Products
                 ui.groupBox_Products->setEnabled(true);
@@ -634,7 +683,6 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 ui.groupBox_SignIn->setVisible(false);
 
                 // groupBox_CustomerStuff
-                ui.groupBox_CustomerStuff->setVisible(true);
 
                 // groupBox_Products
                 ui.groupBox_Products->setEnabled(true);
@@ -666,7 +714,6 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 ui.groupBox_SignIn->setVisible(false);
 
                 // groupBox_EmployeeStuff
-                ui.groupBox_EmployeeStuff->setVisible(true);
             }
             else
             {
@@ -693,7 +740,7 @@ void Pharmacy::on_checkBox_ShowPassword_clicked()
 }
 
 // groupBox_AdminStuff
-void Pharmacy::on_pushButton_AddCustomer_clicked()
+void Pharmacy::on_actionAddCustomer_triggered()
 {
     addCustomerDialog = new AddCustomerDialog(this);
     connect(addCustomerDialog, SIGNAL(accepted()), this, SLOT(addCustomerAccepted()));
@@ -716,14 +763,15 @@ void Pharmacy::addCustomerAccepted()
     }
     else
     {
-        customers[login] = Customer(name, surname, adress, login, password);
+        customers[login] = Customer(name, surname, adress, 0.0, login, password);
         ui.comboBox_users->addItem(login);
         qDebug() << "New customer added\n";
     }
     
 }
 
-void Pharmacy::on_pushButton_AddPremiumCustomer_clicked()
+
+void Pharmacy::on_actionAddPremiumCustomer_triggered()
 {
     addPremiumCustomerDialog = new AddPremiumCustomerDialog(this);
     connect(addPremiumCustomerDialog, SIGNAL(accepted()), this, SLOT(addPremiumCustomerAccepted()));
@@ -747,14 +795,15 @@ void Pharmacy::addPremiumCustomerAccepted()
     }
     else
     {
-        premiumCustomers[login] = PremiumCustomer(name, surname, adress, discount, login, password);
+        premiumCustomers[login] = PremiumCustomer(name, surname, adress, 0.0, discount, login, password);
         ui.comboBox_users->addItem(login);
         qDebug() << "New premium customer added\n";
     }
     
 }
 
-void Pharmacy::on_pushButton_AddEmployee_clicked()
+
+void Pharmacy::on_actionAddEmployee_triggered()
 {
     addEmployeeDialog = new AddEmployeeDialog(this);
     connect(addEmployeeDialog, SIGNAL(accepted()), this, SLOT(addEmployeeAccepted()));
@@ -781,13 +830,16 @@ void Pharmacy::addEmployeeAccepted()
     
 }
 
-void Pharmacy::on_pushButton_UpdateProducts_clicked()
+
+void Pharmacy::on_actionUpdateProducts_triggered()
 {
     if (updateProducts())
         infoMessage("Products successfully updated");
     else
         warningMessage("Error with updating products");
 }
+
+
 
 void Pharmacy::on_lineEdit_SearchBy_textChanged()
 {

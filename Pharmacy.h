@@ -33,7 +33,7 @@ private:
 
     QMessageBox msgBox;
 
-    // veci na ukladanie dat uzivatelov
+    // veci na ukladanie dat uzivatelov, produktov
     Admin admin;
 
     QMap<QString, Customer> customers;
@@ -82,16 +82,16 @@ private slots:
     void on_checkBox_ShowPassword_clicked();
 
     // groupBox_AdminStuff
-    void on_pushButton_AddCustomer_clicked();
+    void on_actionAddCustomer_triggered();
     void addCustomerAccepted();
 
-    void on_pushButton_AddPremiumCustomer_clicked();
+    void on_actionAddPremiumCustomer_triggered();
     void addPremiumCustomerAccepted();
     
-    void on_pushButton_AddEmployee_clicked();
+    void on_actionAddEmployee_triggered();
     void addEmployeeAccepted();
 
-    void on_pushButton_UpdateProducts_clicked();
+    void on_actionUpdateProducts_triggered();
 
     // groupBox_Catalog
     void on_lineEdit_SearchBy_textChanged();

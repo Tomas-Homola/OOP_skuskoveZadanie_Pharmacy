@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>887</width>
-    <height>806</height>
+    <height>805</height>
    </rect>
   </property>
   <property name="font">
@@ -206,145 +206,6 @@
      </widget>
     </item>
     <item>
-     <widget class="QGroupBox" name="groupBox_AdminStuff">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>75</height>
-       </size>
-      </property>
-      <property name="title">
-       <string>Admin stuff</string>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <spacer name="horizontalSpacer_7">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_AddCustomer">
-         <property name="text">
-          <string>Add Customer</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_AddPremiumCustomer">
-         <property name="text">
-          <string>Add Premuim Customer</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_AddEmployee">
-         <property name="text">
-          <string>Add Employee</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_UpdateProducts">
-         <property name="text">
-          <string>Update products</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_8">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="groupBox_CustomerStuff">
-      <property name="title">
-       <string>Customer Stuff</string>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <item>
-        <spacer name="horizontalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_9">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="groupBox_EmployeeStuff">
-      <property name="title">
-       <string>Employee Stuff</string>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
-        <spacer name="horizontalSpacer_10">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_11">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
      <widget class="QGroupBox" name="groupBox_Products">
       <property name="title">
        <string>GroupBox</string>
@@ -515,6 +376,31 @@
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuAdminStuff">
+    <property name="title">
+     <string>Admin stuff</string>
+    </property>
+    <addaction name="actionAddCustomer"/>
+    <addaction name="actionAddPremiumCustomer"/>
+    <addaction name="actionAddEmployee"/>
+    <addaction name="separator"/>
+    <addaction name="actionUpdateProducts"/>
+   </widget>
+   <widget class="QMenu" name="menuCustomer_Stuff">
+    <property name="title">
+     <string>Customer Stuff</string>
+    </property>
+    <addaction name="actionChange_account_information"/>
+   </widget>
+   <widget class="QMenu" name="menuEmployee_Stuff">
+    <property name="title">
+     <string>Employee Stuff</string>
+    </property>
+    <addaction name="actionChange_employee_position"/>
+   </widget>
+   <addaction name="menuAdminStuff"/>
+   <addaction name="menuCustomer_Stuff"/>
+   <addaction name="menuEmployee_Stuff"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -533,6 +419,36 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionAddCustomer">
+   <property name="text">
+    <string>Add Customer</string>
+   </property>
+  </action>
+  <action name="actionAddPremiumCustomer">
+   <property name="text">
+    <string>Add Premium Customer</string>
+   </property>
+  </action>
+  <action name="actionAddEmployee">
+   <property name="text">
+    <string>Add Employee</string>
+   </property>
+  </action>
+  <action name="actionUpdateProducts">
+   <property name="text">
+    <string>Update Products</string>
+   </property>
+  </action>
+  <action name="actionChange_account_information">
+   <property name="text">
+    <string>Change account information</string>
+   </property>
+  </action>
+  <action name="actionChange_employee_position">
+   <property name="text">
+    <string>Change employee position</string>
    </property>
   </action>
  </widget>
