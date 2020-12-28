@@ -10,6 +10,7 @@
 #include "AddCustomerDialog.h"
 #include "AddPremiumCustomerDialog.h"
 #include "AddEmployeeDialog.h"
+#include "EditUserDialog.h"
 
 class Pharmacy : public QMainWindow
 {
@@ -23,6 +24,7 @@ private:
     AddCustomerDialog* addCustomerDialog;
     AddPremiumCustomerDialog* addPremiumCustomerDialog;
     AddEmployeeDialog* addEmployeeDialog;
+    EditUserDialog* editUserDialog;
 
     Customer* signedCustomer = nullptr;
     PremiumCustomer* signedPremiumCustomer = nullptr;
@@ -81,7 +83,7 @@ private slots:
     void on_pushButton_SignInConfirm_clicked();
     void on_checkBox_ShowPassword_clicked();
 
-    // groupBox_AdminStuff
+    // menu Admin stuff
     void on_actionAddCustomer_triggered();
     void addCustomerAccepted();
 
@@ -93,7 +95,18 @@ private slots:
 
     void on_actionUpdateProducts_triggered();
 
+    void on_actionEditUser_triggered();
+    void editUserAccepted();
+
+    // menu Customer stuff
+    void on_actionChangeAccountInformation_triggered();
+    void changeAccountInformationAccepted();
+
+    // menu Employee stuff
+    void on_actionChangeEmployeePosition_triggered();
+    void changeEmployeePositionAccepted();
+
     // groupBox_Catalog
-    void on_lineEdit_SearchBy_textChanged();
+    void on_lineEdit_SearchBy_textChanged(); // vyhladavanie
 
 };

@@ -466,6 +466,7 @@ void Pharmacy::showProductsInCatalog(QVector<Product>& productsToShow)
    
 }
 
+// messages
 void Pharmacy::infoMessage(QString message)
 {
     msgBox.setWindowTitle("Info message");
@@ -570,8 +571,15 @@ void Pharmacy::on_pushButton_SignOut_clicked()
     ui.pushButton_SignInWindow->setVisible(true);
     ui.label_SignedInAs->setText("Signed out");
 
-    //groupBoxi Users Stuff
-    ui.menuAdminStuff->setEnabled(false);
+    //menu pre Users stuff
+    if (ui.menuAdminStuff->isEnabled())
+        ui.menuAdminStuff->setEnabled(false);
+
+    if (ui.menuCustomer_Stuff->isEnabled())
+        ui.menuCustomer_Stuff->setEnabled(false);
+    
+    if (ui.menuEmployee_Stuff->isEnabled())
+        ui.menuEmployee_Stuff->setEnabled(false);
 
     // groupBox_Products
     ui.groupBox_Products->setEnabled(false);
@@ -583,13 +591,13 @@ void Pharmacy::on_pushButton_PrintUsers_clicked()
     qDebug() << admin.getLogin() << admin.getPassword();
 
     for (int i = 0; i < customers.size(); i++)
-        qDebug() << customers[customers.keys()[i]].getName() << customers[customers.keys()[i]].getSurname() << customers[customers.keys()[i]].getAdress() << customers[customers.keys()[i]].getTotalMoneySpent() << customers[customers.keys()[i]].getLogin() << customers[customers.keys()[i]].getPassword();
+        customers[customers.keys()[i]].info();
 
     for (int i = 0; i < premiumCustomers.size(); i++)
-        qDebug() << premiumCustomers[premiumCustomers.keys()[i]].getName() << premiumCustomers[premiumCustomers.keys()[i]].getSurname() << premiumCustomers[premiumCustomers.keys()[i]].getAdress() << premiumCustomers[premiumCustomers.keys()[i]].getTotalMoneySpent() << premiumCustomers[premiumCustomers.keys()[i]].getDiscount() << premiumCustomers[premiumCustomers.keys()[i]].getLogin() << premiumCustomers[premiumCustomers.keys()[i]].getPassword();
+        premiumCustomers[premiumCustomers.keys()[i]].info();
 
     for (int i = 0; i < employees.size(); i++)
-        qDebug() << employees[employees.keys()[i]].getPosition() << employees[employees.keys()[i]].getLogin() << employees[employees.keys()[i]].getPassword();
+        employees[employees.keys()[i]].info();
 }
 
 // groupBox_SignIn
@@ -620,8 +628,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
             // groupBox_SignIn
             ui.groupBox_SignIn->setVisible(false);
 
-            // groupBox_AdminStuff
-            //ui.groupBox_AdminStuff->setVisible(true);
+            // menu Users stuff
             ui.menuAdminStuff->setEnabled(true);
         }
         else
@@ -651,7 +658,8 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 // groupBox_SignIn
                 ui.groupBox_SignIn->setVisible(false);
 
-                // groupBox_CustomerStuff
+                // menu Users stuff
+                ui.menuCustomer_Stuff->setEnabled(true);
 
                 // groupBox_Products
                 ui.groupBox_Products->setEnabled(true);
@@ -682,7 +690,8 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 // groupBox_SignIn
                 ui.groupBox_SignIn->setVisible(false);
 
-                // groupBox_CustomerStuff
+                // menu Users stuff
+                ui.menuCustomer_Stuff->setEnabled(true);
 
                 // groupBox_Products
                 ui.groupBox_Products->setEnabled(true);
@@ -713,7 +722,8 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 // groupBox_SignIn
                 ui.groupBox_SignIn->setVisible(false);
 
-                // groupBox_EmployeeStuff
+                // menu Users stuff
+                ui.menuEmployee_Stuff->setEnabled(true);
             }
             else
             {
@@ -739,7 +749,7 @@ void Pharmacy::on_checkBox_ShowPassword_clicked()
     }
 }
 
-// groupBox_AdminStuff
+// menu Admin stuff
 void Pharmacy::on_actionAddCustomer_triggered()
 {
     addCustomerDialog = new AddCustomerDialog(this);
@@ -840,7 +850,44 @@ void Pharmacy::on_actionUpdateProducts_triggered()
 }
 
 
+void Pharmacy::on_actionEditUser_triggered()
+{
+}
 
+void Pharmacy::editUserAccepted()
+{
+}
+
+// menu Customer stuff
+void Pharmacy::on_actionChangeAccountInformation_triggered()
+{
+    editUserDialog = new EditUserDialog(signedUserType, this);
+    connect(editUserDialog, SIGNAL(accepted()), this, SLOT(changeAccountInformationAccepted()));
+    editUserDialog->exec();
+}
+
+void Pharmacy::changeAccountInformationAccepted()
+{
+    if (signedUserType == "Customer")
+        qDebug() << "Customer information changed\n";
+    else if (signedUserType == "PremiumCustomer")
+        qDebug() << "Premium Customer information changed\n";
+}
+
+// menu Employee stuff
+void Pharmacy::on_actionChangeEmployeePosition_triggered()
+{
+    editUserDialog = new EditUserDialog(signedUserType, this);
+    connect(editUserDialog, SIGNAL(accepted()), this, SLOT(changeEmployeePositionAccepted()));
+    editUserDialog->exec();
+}
+
+void Pharmacy::changeEmployeePositionAccepted()
+{
+    qDebug() << "Employee position changed\n";
+}
+
+// groupBox_Catalog
 void Pharmacy::on_lineEdit_SearchBy_textChanged()
 {
     foundProducts.clear();
