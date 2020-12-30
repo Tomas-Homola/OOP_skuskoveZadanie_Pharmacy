@@ -19,14 +19,9 @@ private:
 	bool showPassword = false;
 
 public:
-	// este dorobit pre admina: pridat aj comboBox (podobne ako pri prihlasovani)
-	EditUserDialog(QString userType, QList<QString>& customers, QList<QString>& premiumCustomers, QList<QString>& employees, QWidget* parent = Q_NULLPTR) : QDialog(parent), editUserUI(new Ui::EditUserDialog)
+	EditUserDialog(QString userType, QList<QString>& customers, QList<QString>& premiumCustomers, QList<QString>& employees, QWidget* parent = Q_NULLPTR) : QDialog(parent), editUserUI(new Ui::EditUserDialog), customers(customers), premiumCustomers(premiumCustomers), employees(employees)
 	{
 		editUserUI->setupUi(this);
-
-		this->customers = customers;
-		this->premiumCustomers = premiumCustomers;
-		this->employees = employees;
 		
 		if (userType == "Customer")
 		{
