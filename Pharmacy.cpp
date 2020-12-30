@@ -16,7 +16,7 @@ bool Pharmacy::loadAdmin()
         QString password = fromFile.readLine();
 
         admin.setPassword(password);
-        ui.comboBox_users->addItem(admin.getLogin());
+        ui.comboBox_Users->addItem(admin.getLogin());
 
         adminFile.close();
         qDebug() << "Admin loaded\n";
@@ -50,7 +50,7 @@ bool Pharmacy::loadCustomers()
             //customers.push_back(Customer(name, surname, adress, login, password));
             //customersLogin.push_back(login);
             customers[login] = Customer(name, surname, adress, totalMoneySpent, login, password);
-            ui.comboBox_users->addItem(login);
+            ui.comboBox_Users->addItem(login);
 
         }
 
@@ -91,7 +91,7 @@ bool Pharmacy::loadPremiumCustomers()
             //premiumCustomers.push_back(PremiumCustomer(name, surname, adress, discount, login, password));
             //premiumCustomersLogin.push_back(login);
             premiumCustomers[login] = PremiumCustomer(name, surname, adress, totalMoneySpent, discount, login, password);
-            ui.comboBox_users->addItem(login);
+            ui.comboBox_Users->addItem(login);
         }
         premiumCustomersFile.close();
         
@@ -126,7 +126,7 @@ bool Pharmacy::loadEmployees()
             //employees.push_back(Employee(position, login, password));
             //employeesLogin.push_back(login);
             employees[login] = Employee(position, login, password);
-            ui.comboBox_users->addItem(login);
+            ui.comboBox_Users->addItem(login);
         }
         employeesFile.close();
         if (employees.isEmpty())
@@ -445,17 +445,14 @@ void Pharmacy::showProductsInCatalog(QVector<Product>& productsToShow)
             if (signedUserType == "PremiumCustomer")
             {
                 double afterDiscount = (1.0 - (double(signedPremiumCustomer->getDiscount()) / 100)) * productsToShow[i].getPrice();
-                price->setText(QString("%1 EUR").arg(afterDiscount));
-                qDebug() << "testing discount:" << afterDiscount;
-                qDebug() << "Discount...\n" << price->text();
+                price->setText(QString("%1 EUR").arg(QString::number(afterDiscount, 'f', 2)));
             }
             else if (signedUserType == "Customer")
             {
-                price->setText(QString("%1 EUR").arg(productsToShow[i].getPrice()));
-                qDebug() << "No discount...\n" << price->text();
+                price->setText(QString("%1 EUR").arg(QString::number(productsToShow[i].getPrice(), 'f', 2)));
             }
 
-            quantity->setText(QString("%1 x").arg(productsToShow[i].getQuantity()).rightJustified(4, ' '));
+            quantity->setText(QString("%1 x").arg(productsToShow[i].getQuantity()).leftJustified(4, ' '));
 
             ui.tableWidget_Catalog->setItem(i, 0, ID);
             ui.tableWidget_Catalog->setItem(i, 1, name);
@@ -479,7 +476,7 @@ void Pharmacy::warningMessage(QString message)
 {
     msgBox.setWindowTitle("Warning");
     msgBox.setIcon(QMessageBox::Warning);
-    msgBox.setText("Error with saving users");
+    msgBox.setText(message);
     msgBox.exec();
 }
 
@@ -571,6 +568,15 @@ void Pharmacy::on_pushButton_SignOut_clicked()
     ui.pushButton_SignInWindow->setVisible(true);
     ui.label_SignedInAs->setText("Signed out");
 
+    if (signedCustomer != nullptr)
+        signedCustomer = nullptr;
+    if (signedPremiumCustomer != nullptr)
+        signedPremiumCustomer = nullptr;
+    if (signedEmployee != nullptr)
+        signedEmployee = nullptr;
+
+    signedUserType = "";
+
     //menu pre Users stuff
     if (ui.menuAdminStuff->isEnabled())
         ui.menuAdminStuff->setEnabled(false);
@@ -605,7 +611,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
 {
     bool found = false;
     QString enteredPassword = ui.lineEdit_Password->text(); // temporary string pre ulozenie zadaneho hesla
-    QString chosenLogin = ui.comboBox_users->currentText();
+    QString chosenLogin = ui.comboBox_Users->currentText();
 
     ui.lineEdit_Password->setText(""); // vymazanie zadaneho hesla z lineEditu
     
@@ -761,11 +767,11 @@ void Pharmacy::addCustomerAccepted()
 {
     AddCustomerDialog* addCustomerDialog = static_cast<AddCustomerDialog*>(sender());
 
-    QString name = addCustomerDialog->getName();
-    QString surname = addCustomerDialog->getSurname();
-    QString adress = addCustomerDialog->getAdress();
-    QString login = addCustomerDialog->getLogin();
-    QString password = addCustomerDialog->getPassword();
+    QString name = addCustomerDialog->getName().trimmed();
+    QString surname = addCustomerDialog->getSurname().trimmed();
+    QString adress = addCustomerDialog->getAdress().trimmed();
+    QString login = addCustomerDialog->getLogin().trimmed();
+    QString password = addCustomerDialog->getPassword().trimmed();
 
     if (customers.keys().contains(login) || premiumCustomers.keys().contains(login) || employees.keys().contains(login))
     {
@@ -774,13 +780,14 @@ void Pharmacy::addCustomerAccepted()
     else
     {
         customers[login] = Customer(name, surname, adress, 0.0, login, password);
-        ui.comboBox_users->addItem(login);
+        ui.comboBox_Users->addItem(login);
         qDebug() << "New customer added\n";
     }
     
 }
 
 
+// pridanie noveho Premium Customer
 void Pharmacy::on_actionAddPremiumCustomer_triggered()
 {
     addPremiumCustomerDialog = new AddPremiumCustomerDialog(this);
@@ -792,12 +799,12 @@ void Pharmacy::addPremiumCustomerAccepted()
 {
     AddPremiumCustomerDialog* addPremiumCustomerDialog = static_cast<AddPremiumCustomerDialog*>(sender());
 
-    QString name = addPremiumCustomerDialog->getName();
-    QString surname = addPremiumCustomerDialog->getSurname();
-    QString adress = addPremiumCustomerDialog->getAdress();
+    QString name = addPremiumCustomerDialog->getName().trimmed();
+    QString surname = addPremiumCustomerDialog->getSurname().trimmed();
+    QString adress = addPremiumCustomerDialog->getAdress().trimmed();
     int discount = addPremiumCustomerDialog->getDiscount();
-    QString login = addPremiumCustomerDialog->getLogin();
-    QString password = addPremiumCustomerDialog->getPassword();
+    QString login = addPremiumCustomerDialog->getLogin().trimmed();
+    QString password = addPremiumCustomerDialog->getPassword().trimmed();
 
     if (customers.keys().contains(login) || premiumCustomers.keys().contains(login) || employees.keys().contains(login))
     {
@@ -806,13 +813,14 @@ void Pharmacy::addPremiumCustomerAccepted()
     else
     {
         premiumCustomers[login] = PremiumCustomer(name, surname, adress, 0.0, discount, login, password);
-        ui.comboBox_users->addItem(login);
+        ui.comboBox_Users->addItem(login);
         qDebug() << "New premium customer added\n";
     }
     
 }
 
 
+// pridanie noveho Employee
 void Pharmacy::on_actionAddEmployee_triggered()
 {
     addEmployeeDialog = new AddEmployeeDialog(this);
@@ -824,9 +832,9 @@ void Pharmacy::addEmployeeAccepted()
 {
     AddEmployeeDialog* addEmployeeDialog = static_cast<AddEmployeeDialog*>(sender());
 
-    QString position = addEmployeeDialog->getPosition();
-    QString login = addEmployeeDialog->getLogin();
-    QString password = addEmployeeDialog->getPassword();
+    QString position = addEmployeeDialog->getPosition().trimmed();
+    QString login = addEmployeeDialog->getLogin().trimmed();
+    QString password = addEmployeeDialog->getPassword().trimmed();
 
     if (customers.keys().contains(login) || premiumCustomers.keys().contains(login) || employees.keys().contains(login))
     {
@@ -835,12 +843,13 @@ void Pharmacy::addEmployeeAccepted()
     else
     {
         employees[login] = Employee(position, login, password);
-        ui.comboBox_users->addItem(login);
+        ui.comboBox_Users->addItem(login);
     }
     
 }
 
 
+// update produktov
 void Pharmacy::on_actionUpdateProducts_triggered()
 {
     if (updateProducts())
@@ -850,41 +859,173 @@ void Pharmacy::on_actionUpdateProducts_triggered()
 }
 
 
+// zmena User information
 void Pharmacy::on_actionEditUser_triggered()
 {
+    editUserDialog = new EditUserDialog(signedUserType, customers.keys(), premiumCustomers.keys(), employees.keys(), this);
+    connect(editUserDialog, SIGNAL(accepted()), this, SLOT(editUserAccepted()));
+    editUserDialog->exec();
 }
 
 void Pharmacy::editUserAccepted()
 {
+    EditUserDialog* editUserDialog = static_cast<EditUserDialog*>(sender());
+
+    QString selectedUserLogin = editUserDialog->getCurrentLogin();
+
+    if (customers.keys().contains(selectedUserLogin))
+    {
+        QString newName = editUserDialog->getName();
+        QString newSurname = editUserDialog->getSurname();
+        QString newAdress = editUserDialog->getAdress();
+        QString newLogin = editUserDialog->getLogin();
+        QString newPassword = editUserDialog->getPassword();
+
+        if (!newName.isEmpty())
+            customers[selectedUserLogin].setName(newName);
+        if (!newSurname.isEmpty())
+            customers[selectedUserLogin].setSurname(newSurname);
+        if (!newAdress.isEmpty())
+            customers[selectedUserLogin].setAdress(newAdress);
+        if (!newLogin.isEmpty())
+        {
+            // zmeny v comboBox_Users
+            int index = ui.comboBox_Users->findText(selectedUserLogin);
+            ui.comboBox_Users->setItemText(index, newLogin);
+
+            // zmeny v customers
+            customers[selectedUserLogin].setLogin(newLogin);
+        }
+        if (!newPassword.isEmpty())
+            customers[selectedUserLogin].setPassword(newPassword);
+    }
+    else if (premiumCustomers.keys().contains(selectedUserLogin))
+    {
+        QString newName = editUserDialog->getName();
+        QString newSurname = editUserDialog->getSurname();
+        QString newAdress = editUserDialog->getAdress();
+        int newDiscount = editUserDialog->getDiscount();
+        QString newLogin = editUserDialog->getLogin();
+        QString newPassword = editUserDialog->getPassword();
+
+        if (!newName.isEmpty())
+            premiumCustomers[selectedUserLogin].setName(newName);
+        if (!newSurname.isEmpty())
+            premiumCustomers[selectedUserLogin].setSurname(newSurname);
+        if (!newAdress.isEmpty())
+            premiumCustomers[selectedUserLogin].setAdress(newAdress);
+        if (newDiscount != 0)
+            premiumCustomers[selectedUserLogin].setDicount(newDiscount);
+        if (!newLogin.isEmpty())
+        {
+            // zmeny v comboBox_Users
+            int index = ui.comboBox_Users->findText(selectedUserLogin);
+            ui.comboBox_Users->setItemText(index, newLogin);
+
+            // zmeny v premiumCustomers
+            premiumCustomers[selectedUserLogin].setLogin(newLogin);
+            premiumCustomers.keys()[premiumCustomers.keys().indexOf(selectedUserLogin)] = newLogin; // zmena v QMap v QString indexe
+        }
+        if (!newPassword.isEmpty())
+            premiumCustomers[selectedUserLogin].setPassword(newPassword);
+    }
+    else if (employees.keys().contains(selectedUserLogin))
+    {
+        QString newPosition = editUserDialog->getPosition();
+        QString newLogin = editUserDialog->getLogin();
+        QString newPassword = editUserDialog->getPassword();
+
+        if (!newPosition.isEmpty())
+            employees[selectedUserLogin].setPosition(newPosition);
+        if (!newLogin.isEmpty())
+        {
+            // zmeny v comboBox_Users
+            int index = ui.comboBox_Users->findText(selectedUserLogin);
+            ui.comboBox_Users->setItemText(index, newLogin);
+
+            // zmeny v employees
+            employees[selectedUserLogin].setLogin(newLogin);
+            employees.keys()[employees.keys().indexOf(selectedUserLogin)] = newLogin; // zmena v QMap v QString indexe
+        }
+        if (!newPassword.isEmpty())
+            employees[selectedUserLogin].setPassword(newPassword);
+    }
 }
 
 // menu Customer stuff
 void Pharmacy::on_actionChangeAccountInformation_triggered()
 {
-    editUserDialog = new EditUserDialog(signedUserType, this);
+    editUserDialog = new EditUserDialog(signedUserType, customers.keys(), premiumCustomers.keys(), employees.keys(), this);
     connect(editUserDialog, SIGNAL(accepted()), this, SLOT(changeAccountInformationAccepted()));
     editUserDialog->exec();
 }
 
 void Pharmacy::changeAccountInformationAccepted()
 {
+    EditUserDialog* editUserDialog = static_cast<EditUserDialog*>(sender());
+
+    QString name = editUserDialog->getName().trimmed();
+    QString surname = editUserDialog->getSurname().trimmed();
+    QString adress = editUserDialog->getAdress().trimmed();
+
     if (signedUserType == "Customer")
-        qDebug() << "Customer information changed\n";
+    {
+        if (!name.isEmpty())
+        {
+            signedCustomer->setName(name);
+            qDebug() << "Customers's name changed\n";
+        }
+        if (!surname.isEmpty())
+        {
+            signedCustomer->setSurname(surname);
+            qDebug() << "Customer's surname changed\n";
+        }
+        if (!adress.isEmpty())
+        {
+            signedCustomer->setAdress(adress);
+            qDebug() << "Customer's adress changed\n";
+        }
+            
+    }
     else if (signedUserType == "PremiumCustomer")
-        qDebug() << "Premium Customer information changed\n";
+    {
+        if (!name.isEmpty())
+        {
+            signedPremiumCustomer->setName(name);
+            qDebug() << "Premium customers's name changed\n";
+        }
+        if (!surname.isEmpty())
+        {
+            signedPremiumCustomer->setSurname(surname);
+            qDebug() << "Premium customers's surname changed\n";
+        }
+        if (!adress.isEmpty())
+        {
+            signedPremiumCustomer->setAdress(adress);
+            qDebug() << "Premium customers's adress changed\n";
+        }
+    }
 }
 
 // menu Employee stuff
 void Pharmacy::on_actionChangeEmployeePosition_triggered()
 {
-    editUserDialog = new EditUserDialog(signedUserType, this);
+    editUserDialog = new EditUserDialog(signedUserType, customers.keys(), premiumCustomers.keys(), employees.keys(), this);
     connect(editUserDialog, SIGNAL(accepted()), this, SLOT(changeEmployeePositionAccepted()));
     editUserDialog->exec();
 }
 
 void Pharmacy::changeEmployeePositionAccepted()
 {
-    qDebug() << "Employee position changed\n";
+    EditUserDialog* editUserDialog = static_cast<EditUserDialog*>(sender());
+
+    QString position = editUserDialog->getPosition().trimmed();
+
+    if (!position.isEmpty())
+    {
+        signedEmployee->setPosition(position);
+        qDebug() << "Employee's position changed\n";
+    }
 }
 
 // groupBox_Catalog
