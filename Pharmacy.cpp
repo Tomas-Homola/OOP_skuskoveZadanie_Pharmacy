@@ -887,6 +887,8 @@ void Pharmacy::editUserAccepted()
             customers[selectedUserLogin].setSurname(newSurname);
         if (!newAdress.isEmpty())
             customers[selectedUserLogin].setAdress(newAdress);
+        if (!newPassword.isEmpty())
+            customers[selectedUserLogin].setPassword(newPassword);
         if (!newLogin.isEmpty())
         {
             // zmeny v comboBox_Users
@@ -894,10 +896,10 @@ void Pharmacy::editUserAccepted()
             ui.comboBox_Users->setItemText(index, newLogin);
 
             // zmeny v customers
-            customers[selectedUserLogin].setLogin(newLogin);
+            customers[newLogin] = customers[selectedUserLogin]; // vytvori sa "novy" zakaznik pod novym login Key
+            customers.remove(selectedUserLogin); // vymazanie stareho login Key
+            customers[newLogin].setLogin(newLogin); // nastavenie noveho loginu uz v triede Customer
         }
-        if (!newPassword.isEmpty())
-            customers[selectedUserLogin].setPassword(newPassword);
     }
     else if (premiumCustomers.keys().contains(selectedUserLogin))
     {
@@ -916,6 +918,8 @@ void Pharmacy::editUserAccepted()
             premiumCustomers[selectedUserLogin].setAdress(newAdress);
         if (newDiscount != 0)
             premiumCustomers[selectedUserLogin].setDicount(newDiscount);
+        if (!newPassword.isEmpty())
+            premiumCustomers[selectedUserLogin].setPassword(newPassword);
         if (!newLogin.isEmpty())
         {
             // zmeny v comboBox_Users
@@ -923,11 +927,10 @@ void Pharmacy::editUserAccepted()
             ui.comboBox_Users->setItemText(index, newLogin);
 
             // zmeny v premiumCustomers
-            premiumCustomers[selectedUserLogin].setLogin(newLogin);
-            premiumCustomers.keys()[premiumCustomers.keys().indexOf(selectedUserLogin)] = newLogin; // zmena v QMap v QString indexe
+            premiumCustomers[newLogin] = premiumCustomers[selectedUserLogin]; // vytvori sa "novy" zakaznik pod novym login Key
+            premiumCustomers.remove(selectedUserLogin); // vymazanie stareho login Key
+            premiumCustomers[newLogin].setLogin(newLogin); // nastavenie noveho loginu uz v triede Customer
         }
-        if (!newPassword.isEmpty())
-            premiumCustomers[selectedUserLogin].setPassword(newPassword);
     }
     else if (employees.keys().contains(selectedUserLogin))
     {
@@ -937,18 +940,19 @@ void Pharmacy::editUserAccepted()
 
         if (!newPosition.isEmpty())
             employees[selectedUserLogin].setPosition(newPosition);
+        if (!newPassword.isEmpty())
+            employees[selectedUserLogin].setPassword(newPassword);
         if (!newLogin.isEmpty())
         {
             // zmeny v comboBox_Users
             int index = ui.comboBox_Users->findText(selectedUserLogin);
             ui.comboBox_Users->setItemText(index, newLogin);
 
-            // zmeny v employees
-            employees[selectedUserLogin].setLogin(newLogin);
-            employees.keys()[employees.keys().indexOf(selectedUserLogin)] = newLogin; // zmena v QMap v QString indexe
+            // zmeny v customers
+            employees[newLogin] = employees[selectedUserLogin]; // vytvori sa "novy" zakaznik pod novym login Key
+            employees.remove(selectedUserLogin); // vymazanie stareho login Key
+            employees[newLogin].setLogin(newLogin); // nastavenie noveho loginu uz v triede Customer
         }
-        if (!newPassword.isEmpty())
-            employees[selectedUserLogin].setPassword(newPassword);
     }
 }
 
@@ -1044,7 +1048,6 @@ void Pharmacy::on_lineEdit_SearchBy_textChanged()
         if (productFound)
         {
             foundProducts.push_back(products[i]);
-            products[i].info();
         }
     }
 
