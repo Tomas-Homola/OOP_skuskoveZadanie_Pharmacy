@@ -11,6 +11,7 @@
 #include "AddPremiumCustomerDialog.h"
 #include "AddEmployeeDialog.h"
 #include "EditUserDialog.h"
+#include "Order.h"
 
 class Pharmacy : public QMainWindow
 {

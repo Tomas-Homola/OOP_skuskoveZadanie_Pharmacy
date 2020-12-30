@@ -594,6 +594,8 @@ void Pharmacy::on_pushButton_SignOut_clicked()
 
 void Pharmacy::on_pushButton_PrintUsers_clicked()
 {
+    qDebug() << "\n";
+
     qDebug() << admin.getLogin() << admin.getPassword();
 
     for (int i = 0; i < customers.size(); i++)
