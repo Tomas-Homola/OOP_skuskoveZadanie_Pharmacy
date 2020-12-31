@@ -15,14 +15,17 @@ public:
 		addPremiumCustomerUI->setupUi(this);
 	}
 
-	QString getName() { return addPremiumCustomerUI->lineEdit_Name->text(); }
-	QString getSurname() { return addPremiumCustomerUI->lineEdit_Surname->text(); }
-	QString getAdress() { return addPremiumCustomerUI->lineEdit_Adress->text(); }
+	QString getName() { return addPremiumCustomerUI->lineEdit_Name->text().trimmed(); }
+	QString getSurname() { return addPremiumCustomerUI->lineEdit_Surname->text().trimmed(); }
+	QString getAdress() { return addPremiumCustomerUI->lineEdit_Adress->text().trimmed(); }
 	int getDiscount() { return addPremiumCustomerUI->spinBox_Discount->value(); }
-	QString getLogin() { return addPremiumCustomerUI->lineEdit_Login->text(); }
+	QString getLogin() { return addPremiumCustomerUI->lineEdit_Login->text().trimmed(); }
 	QString getPassword()
 	{
-		return QCryptographicHash::hash(addPremiumCustomerUI->lineEdit_Password->text().toStdString().c_str(), QCryptographicHash::Sha1).toHex();
+		if (!addPremiumCustomerUI->lineEdit_Password->text().trimmed().isEmpty())
+			return QCryptographicHash::hash(addPremiumCustomerUI->lineEdit_Password->text().toStdString().c_str(), QCryptographicHash::Sha1).toHex();
+		else
+			return QString("");
 	}
 
 

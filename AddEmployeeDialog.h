@@ -19,7 +19,10 @@ public:
 	QString getLogin() { return addEmployeeUI->lineEdit_Login->text(); }
 	QString getPassword()
 	{
-		return QCryptographicHash::hash(addEmployeeUI->lineEdit_Password->text().toStdString().c_str(), QCryptographicHash::Sha1).toHex();
+		if (!addEmployeeUI->lineEdit_Password->text().trimmed().isEmpty())
+			return QCryptographicHash::hash(addEmployeeUI->lineEdit_Password->text().toStdString().c_str(), QCryptographicHash::Sha1).toHex();
+		else
+			return QString("");
 	}
 
 private:
