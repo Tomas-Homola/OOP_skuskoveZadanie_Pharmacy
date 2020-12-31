@@ -15,8 +15,8 @@ public:
 		addEmployeeUI->setupUi(this);
 	}
 
-	QString getPosition() { return addEmployeeUI->lineEdit_Position->text(); }
-	QString getLogin() { return addEmployeeUI->lineEdit_Login->text(); }
+	QString getPosition() { return addEmployeeUI->lineEdit_Position->text().trimmed(); }
+	QString getLogin() { return addEmployeeUI->lineEdit_Login->text().trimmed(); }
 	QString getPassword()
 	{
 		if (!addEmployeeUI->lineEdit_Password->text().trimmed().isEmpty())
