@@ -1,6 +1,7 @@
 #pragma once
 
 #include "User.h"
+#include "Order.h"
 
 class Customer : public User
 {
@@ -9,6 +10,7 @@ protected:
 	QString surname = "";
 	QString adress = "";
 	double totalMoneySpent = 0.0;
+	QMap<unsigned int, Order> orders;
 
 public:
 	Customer() : User() {}
@@ -18,12 +20,15 @@ public:
 	QString getSurname() { return surname; }
 	QString getAdress() { return adress; }
 	double getTotalMoneySpent() { return totalMoneySpent; }
+	QMap<unsigned int, Order>& getAllOrders() { return orders; }
+	Order* getOrder(unsigned int orderNumber) { return &orders[orderNumber]; }
 
 	QString whoAmI() { return "Customer"; }
 
 	void setName(QString newName) { name = newName; }
 	void setSurname(QString newSurname) { surname = newSurname; }
 	void setAdress(QString newAdress) { adress = newAdress; }
+	void addNewOrder(unsigned int newOrderNumber) { orders[newOrderNumber] = Order(false, newOrderNumber); }
 
 	void info() { qDebug() << name << surname << adress << login << password; }
 
