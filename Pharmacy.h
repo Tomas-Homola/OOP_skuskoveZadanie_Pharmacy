@@ -43,8 +43,10 @@ private:
     QMap<QString, PremiumCustomer> premiumCustomers;
     QMap<QString, Employee> employees;
 
-    QVector<Product> products;
+    QVector<Product> products; // skusit tiez prerobit na QMap<QString, Product>, kde QString bude productName, podobne ako pri uzivateloch
     QVector<Product> foundProducts;
+
+    Order* currentOrder = nullptr;
 
     
     // nacitanie dat uzivatelov
@@ -66,6 +68,7 @@ private:
     bool updateProducts();
 
     void showProductsInCatalog(QVector<Product>& productsToShow);
+    void showProductInfo(Product product);
 
     // other
     void infoMessage(QString message);
@@ -109,5 +112,9 @@ private slots:
 
     // groupBox_Catalog
     void on_lineEdit_SearchBy_textChanged(); // vyhladavanie
-
+    void on_pushButton_NewOrder_clicked(); // vytvorenie novej objednavky
+    void on_pushButton_AddProductToCart_clicked(); // pridanie produktu do kosika
+    void on_pushButton_RemoveProductFromCart_clicked(); // vyhodenie produktu z kosika
+    void on_pushButton_FinishOrder_clicked(); // ukoncenie objednavky
+    void on_tableWidget_Catalog_itemClicked(QTableWidgetItem* item);
 };

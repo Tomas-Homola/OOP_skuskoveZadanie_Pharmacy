@@ -436,13 +436,11 @@ void Pharmacy::showProductsInCatalog(QVector<Product>& productsToShow)
         {
             QTableWidgetItem* ID = new QTableWidgetItem();
             QTableWidgetItem* name = new QTableWidgetItem();
-            QTableWidgetItem* price = new QTableWidgetItem();
-            QTableWidgetItem* quantity = new QTableWidgetItem();
 
             ID->setText(QString("%1").arg(productsToShow[i].getID()).leftJustified(3, ' '));
             name->setText(QString(productsToShow[i].getProductName()));
 
-            if (signedUserType == "PremiumCustomer")
+            /*if (signedUserType == "PremiumCustomer")
             {
                 double afterDiscount = (1.0 - (double(signedPremiumCustomer->getDiscount()) / 100)) * productsToShow[i].getPrice();
                 price->setText(QString("%1 EUR").arg(QString::number(afterDiscount, 'f', 2)));
@@ -450,17 +448,33 @@ void Pharmacy::showProductsInCatalog(QVector<Product>& productsToShow)
             else if (signedUserType == "Customer")
             {
                 price->setText(QString("%1 EUR").arg(QString::number(productsToShow[i].getPrice(), 'f', 2)));
-            }
+            }*/
 
-            quantity->setText(QString("%1 x").arg(productsToShow[i].getQuantity()).leftJustified(4, ' '));
 
             ui.tableWidget_Catalog->setItem(i, 0, ID);
             ui.tableWidget_Catalog->setItem(i, 1, name);
-            ui.tableWidget_Catalog->setItem(i, 2, price);
-            ui.tableWidget_Catalog->setItem(i, 3, quantity);
         }
     }
    
+}
+
+void Pharmacy::showProductInfo(Product product)
+{
+    QString infoToShow = "";
+
+    if (signedUserType == "Customer")
+        infoToShow = product.getProductName() + "\nID: " + QString::number(product.getID()) + "\nDescription: " + product.getProductsDescription() + "\nPrice: " + QString::number(product.getPrice(), 'f', 2) + " EUR\nStill available: " + QString::number(product.getQuantity()) + "x";
+    else if (signedUserType == "PremiumCustomer")
+    {
+        double afterDiscount = (1.0 - (double(signedPremiumCustomer->getDiscount()) / 100)) * product.getPrice();
+        
+        infoToShow = product.getProductName() + "\nID: " + QString::number(product.getID()) + "\nDescription: " + product.getProductsDescription() + "\nPrice: " + QString::number(afterDiscount, 'f', 2) + " EUR\nStill available: " + QString::number(product.getQuantity()) + "x";
+    }
+
+    if (infoToShow.isEmpty())
+        qDebug() << "Error with showing product information\n";
+    else
+        ui.textEdit_SelectedProductInfo->setText(infoToShow);
 }
 
 // messages
@@ -485,6 +499,8 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
 {
     ui.setupUi(this);
 
+    srand((unsigned)time(0));
+
     QTextCodec* codec = QTextCodec::codecForName("UTF-8");
     QTextCodec::setCodecForLocale(codec);
 
@@ -505,13 +521,10 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
     // groupBox_Products
     ui.groupBox_Products->setEnabled(false);
 
-    QStringList header = { "ID", "Name", "Price", "Quantity" };
+    QStringList header = { "ID", "Name" };
     ui.tableWidget_Catalog->setHorizontalHeaderLabels(header); // nastavenie headeru
     ui.tableWidget_Catalog->setColumnWidth(0, 2);
     ui.tableWidget_Catalog->setColumnWidth(1, 280);
-    ui.tableWidget_Catalog->setColumnWidth(2, 75);
-    ui.tableWidget_Catalog->setColumnWidth(3, 75);
-
     //qDebug() << QCryptographicHash::hash(QString("admin").toStdString().c_str(), QCryptographicHash::Sha1).toHex();
     
     if (loadUsers())
@@ -588,6 +601,9 @@ void Pharmacy::on_pushButton_SignOut_clicked()
         ui.menuEmployee_Stuff->setEnabled(false);
 
     // groupBox_Products
+    ui.lineEdit_SearchBy->setText("");
+    ui.tableWidget_Catalog->clearContents();
+    ui.tableWidget_Catalog->setRowCount(0);
     ui.groupBox_Products->setEnabled(false);
 
 }
@@ -671,7 +687,10 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
 
                 // groupBox_Products
                 ui.groupBox_Products->setEnabled(true);
-                showProductsInCatalog(products);
+                ui.groupBox_Cart->setEnabled(false);
+                ui.groupBox_Search->setEnabled(false);
+                ui.groupBox_ShowProducts->setEnabled(false);
+                ui.pushButton_AddProductToCart->setEnabled(false);
             }
             else
             {
@@ -703,7 +722,10 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
 
                 // groupBox_Products
                 ui.groupBox_Products->setEnabled(true);
-                showProductsInCatalog(products);
+                ui.groupBox_Cart->setEnabled(false);
+                ui.groupBox_Search->setEnabled(false);
+                ui.groupBox_ShowProducts->setEnabled(false);
+                ui.pushButton_AddProductToCart->setEnabled(false);
             }
             else
             {
@@ -769,11 +791,11 @@ void Pharmacy::addCustomerAccepted()
 {
     AddCustomerDialog* addCustomerDialog = static_cast<AddCustomerDialog*>(sender());
 
-    QString name = addCustomerDialog->getName().trimmed();
-    QString surname = addCustomerDialog->getSurname().trimmed();
-    QString adress = addCustomerDialog->getAdress().trimmed();
-    QString login = addCustomerDialog->getLogin().trimmed();
-    QString password = addCustomerDialog->getPassword().trimmed();
+    QString name = addCustomerDialog->getName();
+    QString surname = addCustomerDialog->getSurname();
+    QString adress = addCustomerDialog->getAdress();
+    QString login = addCustomerDialog->getLogin();
+    QString password = addCustomerDialog->getPassword();
 
     if (customers.keys().contains(login) || premiumCustomers.keys().contains(login) || employees.keys().contains(login))
     {
@@ -801,12 +823,12 @@ void Pharmacy::addPremiumCustomerAccepted()
 {
     AddPremiumCustomerDialog* addPremiumCustomerDialog = static_cast<AddPremiumCustomerDialog*>(sender());
 
-    QString name = addPremiumCustomerDialog->getName().trimmed();
-    QString surname = addPremiumCustomerDialog->getSurname().trimmed();
-    QString adress = addPremiumCustomerDialog->getAdress().trimmed();
+    QString name = addPremiumCustomerDialog->getName();
+    QString surname = addPremiumCustomerDialog->getSurname();
+    QString adress = addPremiumCustomerDialog->getAdress();
     int discount = addPremiumCustomerDialog->getDiscount();
-    QString login = addPremiumCustomerDialog->getLogin().trimmed();
-    QString password = addPremiumCustomerDialog->getPassword().trimmed();
+    QString login = addPremiumCustomerDialog->getLogin();
+    QString password = addPremiumCustomerDialog->getPassword();
 
     if (customers.keys().contains(login) || premiumCustomers.keys().contains(login) || employees.keys().contains(login))
     {
@@ -834,9 +856,9 @@ void Pharmacy::addEmployeeAccepted()
 {
     AddEmployeeDialog* addEmployeeDialog = static_cast<AddEmployeeDialog*>(sender());
 
-    QString position = addEmployeeDialog->getPosition().trimmed();
-    QString login = addEmployeeDialog->getLogin().trimmed();
-    QString password = addEmployeeDialog->getPassword().trimmed();
+    QString position = addEmployeeDialog->getPosition();
+    QString login = addEmployeeDialog->getLogin();
+    QString password = addEmployeeDialog->getPassword();
 
     if (customers.keys().contains(login) || premiumCustomers.keys().contains(login) || employees.keys().contains(login))
     {
@@ -1054,4 +1076,89 @@ void Pharmacy::on_lineEdit_SearchBy_textChanged()
     }
 
     showProductsInCatalog(foundProducts);
+}
+
+void Pharmacy::on_pushButton_NewOrder_clicked()
+{
+    ui.groupBox_Search->setEnabled(true);
+    ui.groupBox_ShowProducts->setEnabled(true);
+    ui.groupBox_Cart->setEnabled(true);
+    showProductsInCatalog(products);
+
+    unsigned int orderNumber = unsigned int (400000 + rand() % 1000000);
+    
+    if (signedUserType == "Customer")
+    {
+        signedCustomer->addNewOrder(orderNumber);
+        currentOrder = signedCustomer->getOrder(orderNumber);
+    }
+    else if (signedUserType == "PremiumCustomer")
+    {
+        signedPremiumCustomer->addNewOrder(orderNumber);
+        currentOrder = signedPremiumCustomer->getOrder(orderNumber);
+    }
+
+    qDebug() << "Current order number:" << currentOrder->getOrderNumber();
+}
+
+void Pharmacy::on_pushButton_AddProductToCart_clicked()
+{
+    int selectedProductID = ui.tableWidget_Catalog->item(ui.tableWidget_Catalog->currentItem()->row(), 0)->text().toInt();
+
+    qDebug() << "Selected ID:" << selectedProductID << "\n";
+
+    if (products[selectedProductID].getQuantity() > 0) // kontrola, ci je vybrany produkt k dispozicii
+    {
+        QString productName = products[selectedProductID].getProductName();
+        QString productDescription = products[selectedProductID].getProductsDescription();
+        double price = 0.0;
+        if (signedUserType == "Customer")
+            price = products[selectedProductID].getPrice();
+        else if (signedUserType == "PremiumCustomer")
+        {
+            double afterDiscount = (1.0 - (double(signedPremiumCustomer->getDiscount()) / 100)) * products[selectedProductID].getPrice();
+            price = afterDiscount;
+        }
+
+        currentOrder->addProduct(ProductForOrder(productName, productDescription, price)); // pridanie produktu do objednavky
+        products[selectedProductID].productBought(); // znizenie poctu produktov
+        
+        // vizualne pridanie produktu do kosika
+        QListWidgetItem* newItem = new QListWidgetItem;
+        newItem->setText(products[selectedProductID].getProductName());
+        ui.listWidget_Cart->addItem(newItem);
+
+        currentOrder->info();
+    }
+    else
+    {
+        warningMessage("Product no longer available");
+    }
+}
+
+void Pharmacy::on_pushButton_RemoveProductFromCart_clicked()
+{
+    int index = ui.listWidget_Cart->currentRow();
+
+    currentOrder->removeProduct(index);
+
+    ui.listWidget_Cart->takeItem(index);
+
+    currentOrder->info();
+}
+
+void Pharmacy::on_pushButton_FinishOrder_clicked()
+{
+    if (currentOrder != nullptr)
+        currentOrder = nullptr;
+}
+
+void Pharmacy::on_tableWidget_Catalog_itemClicked(QTableWidgetItem* item)
+{
+    int selectedProductID = ui.tableWidget_Catalog->item(ui.tableWidget_Catalog->currentItem()->row(), 0)->text().toInt();
+
+    qDebug() << "Selected product ID:" << selectedProductID << "\n";
+    showProductInfo(products[selectedProductID]);
+
+    ui.pushButton_AddProductToCart->setEnabled(true);
 }
