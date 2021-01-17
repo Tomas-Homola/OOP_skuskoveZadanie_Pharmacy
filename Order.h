@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ProductForOrder.h"
+#include "Product.h"
 //#include <QVector>
 
 class Order
@@ -8,7 +8,7 @@ class Order
 private:
 	bool isReady = false;
 	unsigned int orderNumber = -1;
-	QVector<ProductForOrder> orderedProducts;
+	QVector<Product> orderedProducts;
 
 public:
 	Order() {}
@@ -19,10 +19,11 @@ public:
 
 	void setOrderReady(bool isReadyNow) { isReady = isReadyNow; }
 	void setOrderNumber(unsigned int newOrderNumber) { orderNumber = newOrderNumber; }
-	void addProduct(ProductForOrder& productToAdd) { orderedProducts.push_back(productToAdd); }
+	void addProduct(Product& productToAdd) { orderedProducts.push_back(productToAdd); }
 	void removeProduct(int index) { orderedProducts.remove(index); }
 
-	QVector<ProductForOrder>& getOrderedProducts() { return orderedProducts; }
+	QVector<Product>* getOrderedProducts() { return &orderedProducts; }
+	Product* getSpecificProduct(int index) { return &orderedProducts[index]; }
 
 	void info()
 	{
