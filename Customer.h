@@ -30,6 +30,15 @@ public:
 	void setAdress(QString newAdress) { adress = newAdress; }
 	void addNewOrder(unsigned int newOrderNumber) { orders[newOrderNumber] = Order(false, newOrderNumber); }
 
-	void info() { qDebug() << name << surname << adress << login << password; }
+	void info() 
+	{ 
+		qDebug() << name << surname << adress << login << password;
+		for (int i = 0; i < orders.size(); i++)
+		{
+			qDebug() << "Order number:" << orders.keys()[i];
+			orders[orders.keys()[i]].info();
+		}
+	
+	}
 
 };
