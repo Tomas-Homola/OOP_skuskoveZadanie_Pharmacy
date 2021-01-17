@@ -25,6 +25,7 @@ public:
 	void setPrice(double newPrice) { price = newPrice; }
 	void setQuantity(int newQuantity) { quantity = newQuantity; }
 	void productBought() { quantity -= 1; }
+	void productReturned() { quantity += 1; }
 
 	void info()
 	{
