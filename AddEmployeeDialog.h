@@ -20,7 +20,7 @@ public:
 	QString getPassword()
 	{
 		if (!addEmployeeUI->lineEdit_Password->text().trimmed().isEmpty())
-			return QCryptographicHash::hash(addEmployeeUI->lineEdit_Password->text().toStdString().c_str(), QCryptographicHash::Sha1).toHex();
+			return QCryptographicHash::hash(addEmployeeUI->lineEdit_Password->text().toUtf8(), QCryptographicHash::Sha1).toHex();
 		else
 			return QString("");
 	}

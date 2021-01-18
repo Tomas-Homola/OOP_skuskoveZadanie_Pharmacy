@@ -23,7 +23,7 @@ public:
 	QString getPassword()
 	{
 		if (!addPremiumCustomerUI->lineEdit_Password->text().trimmed().isEmpty())
-			return QCryptographicHash::hash(addPremiumCustomerUI->lineEdit_Password->text().toStdString().c_str(), QCryptographicHash::Sha1).toHex();
+			return QCryptographicHash::hash(addPremiumCustomerUI->lineEdit_Password->text().toUtf8(), QCryptographicHash::Sha1).toHex();
 		else
 			return QString("");
 	}
