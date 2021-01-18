@@ -21,6 +21,7 @@ public:
     Pharmacy(QWidget *parent = Q_NULLPTR);
     
 private:
+    // UIs
     Ui::PharmacyClass ui;
     AddCustomerDialog* addCustomerDialog;
     AddPremiumCustomerDialog* addPremiumCustomerDialog;
@@ -117,4 +118,5 @@ private slots:
     void on_pushButton_RemoveProductFromCart_clicked(); // vyhodenie produktu z kosika
     void on_pushButton_FinishOrder_clicked(); // ukoncenie objednavky
     void on_tableWidget_Catalog_itemClicked(QTableWidgetItem* item);
+    void on_comboBox_SelectedOrder_currentIndexChanged(int index);
 };

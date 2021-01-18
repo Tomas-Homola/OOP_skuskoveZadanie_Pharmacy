@@ -142,12 +142,12 @@ bool Pharmacy::loadUsers()
 {
     if (loadAdmin() && loadCustomers() && loadPremiumCustomers() && loadEmployees())
     {
-        qDebug() << "All data loaded\n";
+        //qDebug() << "All data loaded\n";
         return true;
     }
     else
     {
-        qDebug() << "Error with loading data\n";
+        //qDebug() << "Error with loading data\n";
         return false;
     }
 }
@@ -468,7 +468,7 @@ void Pharmacy::showProductInfo(Product product)
     {
         double afterDiscount = (1.0 - (double(signedPremiumCustomer->getDiscount()) / 100)) * product.getPrice();
         
-        infoToShow = product.getProductName() + "\nID: " + QString::number(product.getID()) + "\nDescription: " + product.getProductsDescription() + "\nPrice: " + QString::number(afterDiscount, 'f', 2) + " EUR\nStill available: " + QString::number(product.getQuantity()) + "x";
+        infoToShow = product.getProductName() + "\nID: " + QString::number(product.getID()) + "\nDescription: " + product.getProductsDescription() + "\nPrice: " + QString::number(product.getPrice(), 'f', 2) + " EUR\nPrice after discount: " + QString::number(afterDiscount, 'f', 2) + " EUR\nStill available: " + QString::number(product.getQuantity()) + "x";
     }
 
     if (infoToShow.isEmpty())
@@ -525,7 +525,7 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
     ui.tableWidget_Catalog->setHorizontalHeaderLabels(header); // nastavenie headeru
     ui.tableWidget_Catalog->setColumnWidth(0, 2);
     ui.tableWidget_Catalog->setColumnWidth(1, 280);
-    //qDebug() << QCryptographicHash::hash(QString("admin").toStdString().c_str(), QCryptographicHash::Sha1).toHex();
+    //qDebug() << QCryptographicHash::hash(QString("admin").toUtf8(), QCryptographicHash::Sha1).toHex();
     
     if (loadUsers())
         qDebug() << "Users loaded";
@@ -541,6 +541,10 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
        // products[i].info();
    
 }
+
+//########################################//
+//################  SLOTS  ###############//
+//########################################//
 
 // ukoncenie programu
 void Pharmacy::closeEvent(QCloseEvent* event)
@@ -601,10 +605,13 @@ void Pharmacy::on_pushButton_SignOut_clicked()
         ui.menuEmployee_Stuff->setEnabled(false);
 
     // groupBox_Products
-    ui.lineEdit_SearchBy->setText("");
-    ui.tableWidget_Catalog->clearContents();
+    ui.lineEdit_SearchBy->setText(""); // vycistenie vyhladavaneho slova
+    ui.tableWidget_Catalog->clearContents(); // vycistenie katalogu
     ui.tableWidget_Catalog->setRowCount(0);
     ui.groupBox_Products->setEnabled(false);
+    ui.textEdit_SelectedProductInfo->clear(); // vycistenie textEditu pre info o produkte
+    ui.comboBox_SelectedOrder->clear(); // vycistenie comboBoxu pre vyberanie objednavok
+    ui.listWidget_Cart->clear(); // vycistenie listWidgetu pre 
 
 }
 
@@ -625,7 +632,7 @@ void Pharmacy::on_pushButton_PrintUsers_clicked()
 }
 
 // groupBox_SignIn
-void Pharmacy::on_pushButton_SignInConfirm_clicked()
+void Pharmacy::on_pushButton_SignInConfirm_clicked() // pridat kontrolu na objednavky
 {
     bool found = false;
     QString enteredPassword = ui.lineEdit_Password->text(); // temporary string pre ulozenie zadaneho hesla
@@ -634,7 +641,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
     ui.lineEdit_Password->setText(""); // vymazanie zadaneho hesla z lineEditu
     
     // premena zadaneho hesla na zasifrovanu formu cez nejaky hash, aby sa dalo porovnat s ulozenym heslom
-    enteredPassword = QCryptographicHash::hash(enteredPassword.toStdString().c_str(), QCryptographicHash::Sha1).toHex();
+    enteredPassword = QCryptographicHash::hash(enteredPassword.toUtf8(), QCryptographicHash::Sha1).toHex();
     
     if (chosenLogin == admin.getLogin()) // ak sa chce prihlasit admin
     {
@@ -674,23 +681,35 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 // info message
                 infoMessage("Welcome " + signedCustomer->getLogin());
 
+
                 // groupBox_main
                 ui.label_SignedInAs->setText("Signed in as: " + signedCustomer->getLogin());
                 ui.pushButton_SignInWindow->setVisible(false);
                 ui.pushButton_SignOut->setVisible(true);
 
+
                 // groupBox_SignIn
                 ui.groupBox_SignIn->setVisible(false);
+
 
                 // menu Users stuff
                 ui.menuCustomer_Stuff->setEnabled(true);
 
+
                 // groupBox_Products
                 ui.groupBox_Products->setEnabled(true);
-                ui.groupBox_Cart->setEnabled(false);
-                ui.groupBox_Search->setEnabled(false);
-                ui.groupBox_ShowProducts->setEnabled(false);
+                //ui.groupBox_Cart->setEnabled(true);
+                //ui.groupBox_Search->setEnabled(false);
+                //ui.groupBox_ShowProducts->setEnabled(false);
                 ui.pushButton_AddProductToCart->setEnabled(false);
+
+                if (signedCustomer->getNumOfOrders() != 0)
+                {
+                    for (int i = 0; i < signedCustomer->getAllOrders().size(); i += -(-1))
+                    {
+                        ui.comboBox_SelectedOrder->addItem(QString::number(signedCustomer->getAllOrders().keys()[i]));
+                    }
+                }
             }
             else
             {
@@ -709,23 +728,35 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked()
                 // info message
                 infoMessage("Welcome " + signedPremiumCustomer->getLogin());
 
+
                 // groupBox_main
                 ui.label_SignedInAs->setText("Signed in as: " + signedPremiumCustomer->getLogin());
                 ui.pushButton_SignInWindow->setVisible(false);
                 ui.pushButton_SignOut->setVisible(true);
 
+
                 // groupBox_SignIn
                 ui.groupBox_SignIn->setVisible(false);
+
 
                 // menu Users stuff
                 ui.menuCustomer_Stuff->setEnabled(true);
 
+
                 // groupBox_Products
                 ui.groupBox_Products->setEnabled(true);
-                ui.groupBox_Cart->setEnabled(false);
-                ui.groupBox_Search->setEnabled(false);
-                ui.groupBox_ShowProducts->setEnabled(false);
+                //ui.groupBox_Cart->setEnabled(false);
+                //ui.groupBox_Search->setEnabled(false);
+                //ui.groupBox_ShowProducts->setEnabled(false);
                 ui.pushButton_AddProductToCart->setEnabled(false);
+
+                if (signedPremiumCustomer->getNumOfOrders() != 0)
+                {
+                    for (int i = 0; i < signedPremiumCustomer->getAllOrders().size(); i -= -1)
+                    {
+                        ui.comboBox_SelectedOrder->addItem(QString::number(signedPremiumCustomer->getAllOrders().keys()[i]));
+                    }
+                }
             }
             else
             {
@@ -1098,6 +1129,8 @@ void Pharmacy::on_pushButton_NewOrder_clicked()
         currentOrder = signedPremiumCustomer->getOrder(orderNumber);
     }
 
+    ui.comboBox_SelectedOrder->addItem(QString::number(orderNumber));
+
     qDebug() << "Current order number:" << currentOrder->getOrderNumber();
 }
 
@@ -1109,26 +1142,32 @@ void Pharmacy::on_pushButton_AddProductToCart_clicked()
 
     if (products[selectedProductID].getQuantity() > 0) // kontrola, ci je vybrany produkt k dispozicii
     {
-        QString productName = products[selectedProductID].getProductName();
-        QString productDescription = products[selectedProductID].getProductsDescription();
+        int ID = products[selectedProductID].getID(); // ID
+        QString productName = products[selectedProductID].getProductName(); // product name
+        QString productDescription = products[selectedProductID].getProductsDescription(); // product description
         double price = 0.0;
         if (signedUserType == "Customer")
-            price = products[selectedProductID].getPrice();
+            price = products[selectedProductID].getPrice(); // price
         else if (signedUserType == "PremiumCustomer")
         {
             double afterDiscount = (1.0 - (double(signedPremiumCustomer->getDiscount()) / 100)) * products[selectedProductID].getPrice();
-            price = afterDiscount;
+            price = afterDiscount; // price
         }
 
-        currentOrder->addProduct(ProductForOrder(productName, productDescription, price)); // pridanie produktu do objednavky
+        currentOrder->addProduct(Product(ID, productName, productDescription, price, 1)); // pridanie produktu do objednavky
         products[selectedProductID].productBought(); // znizenie poctu produktov
+        showProductInfo(products[selectedProductID]); // update info o produkte
         
         // vizualne pridanie produktu do kosika
         QListWidgetItem* newItem = new QListWidgetItem;
         newItem->setText(products[selectedProductID].getProductName());
         ui.listWidget_Cart->addItem(newItem);
 
-        currentOrder->info();
+        //currentOrder->info();
+        //if (signedUserType == "Customer")
+        //    signedCustomer->info();
+        //else if (signedUserType == "PremiumCustomer")
+        //    signedPremiumCustomer->info();
     }
     else
     {
@@ -1139,18 +1178,21 @@ void Pharmacy::on_pushButton_AddProductToCart_clicked()
 void Pharmacy::on_pushButton_RemoveProductFromCart_clicked()
 {
     int index = ui.listWidget_Cart->currentRow();
+    
+    Product* selectedProduct = currentOrder->getSpecificProduct(index);
+    products[selectedProduct->getID()].productReturned(); // zvysenie kusov produktu po jeho vymazani z kosika
 
-    currentOrder->removeProduct(index);
+    currentOrder->removeProduct(index); // odstranenie vybraneho produktu z momentalnej objednavky
 
-    ui.listWidget_Cart->takeItem(index);
+    ui.listWidget_Cart->takeItem(index); // vizualne odstranenie vybraneho produktu z kosika
 
-    currentOrder->info();
+    //currentOrder->info();
 }
 
 void Pharmacy::on_pushButton_FinishOrder_clicked()
 {
-    if (currentOrder != nullptr)
-        currentOrder = nullptr;
+    //if (currentOrder != nullptr)
+      //  currentOrder = nullptr;
 }
 
 void Pharmacy::on_tableWidget_Catalog_itemClicked(QTableWidgetItem* item)
@@ -1161,4 +1203,28 @@ void Pharmacy::on_tableWidget_Catalog_itemClicked(QTableWidgetItem* item)
     showProductInfo(products[selectedProductID]);
 
     ui.pushButton_AddProductToCart->setEnabled(true);
+}
+
+void Pharmacy::on_comboBox_SelectedOrder_currentIndexChanged(int index)
+{
+    ui.listWidget_Cart->clear();
+    unsigned int orderNumber = ui.comboBox_SelectedOrder->currentText().toUInt();
+    
+    if (signedUserType == "Customer")
+    {
+        currentOrder = signedCustomer->getOrder(orderNumber); // zmena vybranej objednavky
+        QVector<Product> orderedProducts = currentOrder->getOrderedProducts();
+        
+        for (int i = 0; i < orderedProducts.size(); i++)
+            ui.listWidget_Cart->addItem(orderedProducts[i].getProductName());
+
+    }
+    else if (signedUserType == "PremiumCustomer")
+    {
+        currentOrder = signedPremiumCustomer->getOrder(orderNumber); // zmena vybranej objednavky
+        QVector<Product> orderedProducts = currentOrder->getOrderedProducts();
+
+        for (int i = 0; i < orderedProducts.size(); i++)
+            ui.listWidget_Cart->addItem(orderedProducts[i].getProductName());
+    }
 }
