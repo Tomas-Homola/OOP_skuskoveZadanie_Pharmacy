@@ -22,6 +22,7 @@ public:
 	double getTotalMoneySpent() { return totalMoneySpent; }
 	QMap<unsigned int, Order>& getAllOrders() { return orders; }
 	Order* getOrder(unsigned int orderNumber) { return &orders[orderNumber]; }
+	int getNumOfOrders() { return orders.size(); }
 
 	QString whoAmI() { return "Customer"; }
 
