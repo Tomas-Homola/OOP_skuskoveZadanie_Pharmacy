@@ -29,9 +29,10 @@ public:
 	void setName(QString newName) { name = newName; }
 	void setSurname(QString newSurname) { surname = newSurname; }
 	void setAdress(QString newAdress) { adress = newAdress; }
-	void addNewOrder(unsigned int newOrderNumber) { orders[newOrderNumber] = Order(false, newOrderNumber); }
+	void addOrder(bool isReady, unsigned int newOrderNumber) { orders[newOrderNumber] = Order(isReady, newOrderNumber); }
+	void removeOrder(unsigned int orderNumber) { orders.remove(orderNumber); }
 
-	void info() 
+	virtual void info() 
 	{ 
 		qDebug() << name << surname << adress << login << password;
 		for (int i = 0; i < orders.size(); i++)

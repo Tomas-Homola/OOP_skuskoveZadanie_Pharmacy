@@ -23,7 +23,7 @@ public:
 	void removeProduct(int index) { orderedProducts.remove(index); }
 
 	QVector<Product>& getOrderedProducts() { return orderedProducts; }
-	Product* getSpecificProduct(int index) { return &orderedProducts[index]; }
+	Product& getSpecificProduct(int index) { return orderedProducts[index]; }
 
 	void info()
 	{
