@@ -23,10 +23,10 @@ public:
 private:
     // UIs
     Ui::PharmacyClass ui;
-    AddCustomerDialog* addCustomerDialog;
-    AddPremiumCustomerDialog* addPremiumCustomerDialog;
-    AddEmployeeDialog* addEmployeeDialog;
-    EditUserDialog* editUserDialog;
+    AddCustomerDialog* addCustomerDialog = nullptr;
+    AddPremiumCustomerDialog* addPremiumCustomerDialog = nullptr;
+    AddEmployeeDialog* addEmployeeDialog = nullptr;
+    EditUserDialog* editUserDialog = nullptr;
 
     Customer* signedCustomer = nullptr;
     PremiumCustomer* signedPremiumCustomer = nullptr;
@@ -116,7 +116,7 @@ private slots:
     void on_pushButton_NewOrder_clicked(); // vytvorenie novej objednavky
     void on_pushButton_AddProductToCart_clicked(); // pridanie produktu do kosika
     void on_pushButton_RemoveProductFromCart_clicked(); // vyhodenie produktu z kosika
-    void on_pushButton_FinishOrder_clicked(); // ukoncenie objednavky
+    void on_pushButton_deleteorder_clicked(); // ukoncenie objednavky
     void on_tableWidget_Catalog_itemClicked(QTableWidgetItem* item);
     void on_comboBox_SelectedOrder_currentIndexChanged(int index);
 };
