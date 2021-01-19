@@ -537,6 +537,9 @@ Pharmacy::Pharmacy(QWidget *parent) : QMainWindow(parent)
     else
         qDebug() << "Error loading products\n";
 
+    qDebug() << "index comboBox:" << ui.comboBox_SelectedOrder->currentIndex();
+    qDebug() << "current row:" << ui.listWidget_Cart->currentRow();
+
     //for (int i = 0; i < products.size(); i++)
        // products[i].info();
    
@@ -1116,20 +1119,29 @@ void Pharmacy::on_pushButton_NewOrder_clicked()
     ui.groupBox_Cart->setEnabled(true);
     showProductsInCatalog(products);
 
+    qDebug() << "current index:" << ui.comboBox_SelectedOrder->currentIndex();
+
     unsigned int orderNumber = unsigned int (400000 + rand() % 1000000);
     
     if (signedUserType == "Customer")
     {
-        signedCustomer->addNewOrder(orderNumber);
+        signedCustomer->addOrder(false, orderNumber);
         currentOrder = signedCustomer->getOrder(orderNumber);
     }
     else if (signedUserType == "PremiumCustomer")
     {
-        signedPremiumCustomer->addNewOrder(orderNumber);
+        signedPremiumCustomer->addOrder(false, orderNumber);
         currentOrder = signedPremiumCustomer->getOrder(orderNumber);
     }
 
+    int oldIndex = ui.comboBox_SelectedOrder->currentIndex();
+
     ui.comboBox_SelectedOrder->addItem(QString::number(orderNumber));
+
+    if (ui.comboBox_SelectedOrder->currentIndex() == oldIndex)
+        ui.comboBox_SelectedOrder->setCurrentIndex(ui.comboBox_SelectedOrder->currentIndex() + 1);
+
+    qDebug() << "current index after:" << ui.comboBox_SelectedOrder->currentIndex();
 
     qDebug() << "Current order number:" << currentOrder->getOrderNumber();
 }
@@ -1177,19 +1189,22 @@ void Pharmacy::on_pushButton_AddProductToCart_clicked()
 
 void Pharmacy::on_pushButton_RemoveProductFromCart_clicked()
 {
-    int index = ui.listWidget_Cart->currentRow();
-    
-    Product* selectedProduct = currentOrder->getSpecificProduct(index);
-    products[selectedProduct->getID()].productReturned(); // zvysenie kusov produktu po jeho vymazani z kosika
+    if (ui.listWidget_Cart->currentRow() != -1) // kontrola, ci je nieco vybrane
+    {
+        int index = ui.listWidget_Cart->currentRow();
 
-    currentOrder->removeProduct(index); // odstranenie vybraneho produktu z momentalnej objednavky
+        Product selectedProduct = currentOrder->getSpecificProduct(index);
+        products[selectedProduct.getID()].productReturned(); // zvysenie kusov produktu po jeho vymazani z kosika
 
-    ui.listWidget_Cart->takeItem(index); // vizualne odstranenie vybraneho produktu z kosika
+        currentOrder->removeProduct(index); // odstranenie vybraneho produktu z momentalnej objednavky
 
-    //currentOrder->info();
+        ui.listWidget_Cart->takeItem(index); // vizualne odstranenie vybraneho produktu z kosika
+
+        //currentOrder->info();
+    }
 }
 
-void Pharmacy::on_pushButton_FinishOrder_clicked()
+void Pharmacy::on_pushButton_deleteorder_clicked()
 {
     //if (currentOrder != nullptr)
       //  currentOrder = nullptr;
@@ -1213,6 +1228,7 @@ void Pharmacy::on_comboBox_SelectedOrder_currentIndexChanged(int index)
     if (signedUserType == "Customer")
     {
         currentOrder = signedCustomer->getOrder(orderNumber); // zmena vybranej objednavky
+        qDebug() << "current order num:" << currentOrder->getOrderNumber();
         QVector<Product> orderedProducts = currentOrder->getOrderedProducts();
         
         for (int i = 0; i < orderedProducts.size(); i++)
@@ -1222,6 +1238,7 @@ void Pharmacy::on_comboBox_SelectedOrder_currentIndexChanged(int index)
     else if (signedUserType == "PremiumCustomer")
     {
         currentOrder = signedPremiumCustomer->getOrder(orderNumber); // zmena vybranej objednavky
+        qDebug() << "current order num:" << currentOrder->getOrderNumber();
         QVector<Product> orderedProducts = currentOrder->getOrderedProducts();
 
         for (int i = 0; i < orderedProducts.size(); i++)
