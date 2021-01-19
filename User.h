@@ -10,8 +10,8 @@ protected:
 	bool isAdmin = false;
 public:
 	User() {};
-	User(QString login, QString password, bool isAdmin) { this->login = login; this->password = password; this->isAdmin = isAdmin; }
-
+	User(QString login, QString password, bool isAdmin) : login(login), password(password), isAdmin(isAdmin) {}
+	
 	QString getLogin() { return login; }
 	QString getPassword() { return password; }
 	bool isUserAdmin() { return isAdmin; }

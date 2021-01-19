@@ -14,7 +14,7 @@ protected:
 
 public:
 	Customer() : User() {}
-	Customer(QString name, QString surname, QString adress, double totalMoneySpent, QString login, QString password) : User(login, password, false) { this->name = name, this->surname = surname, this->adress = adress; this->totalMoneySpent = totalMoneySpent; }
+	Customer(QString name, QString surname, QString adress, double totalMoneySpent, QString login, QString password) : User(login, password, false), name(name), surname(surname), adress(adress), totalMoneySpent(totalMoneySpent) {}
 
 	QString getName() { return name; }
 	QString getSurname() { return surname; }

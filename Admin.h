@@ -9,7 +9,7 @@ private:
 
 public:
 	Admin() {};
-	Admin(QString password) { this->login = "admin"; this->password = password; this->isAdmin = true; }
+	Admin(QString password) : login("admin"), password(password), isAdmin(true) {}
 
 	QString getLogin() { return login; }
 	QString getPassword() { return password; }

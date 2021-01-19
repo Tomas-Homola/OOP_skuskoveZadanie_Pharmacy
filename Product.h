@@ -11,7 +11,7 @@ private:
 
 public:
 	Product() {};
-	Product(int ID, QString productName, QString productDescription, double price, int quantity) { this->ID = ID; this->productName = productName; this->productDescription = productDescription; this->price = price; this->quantity = quantity; }
+	Product(int ID, QString productName, QString productDescription, double price, int quantity) : ID(ID), productName(productName), productDescription(productDescription), price(price), quantity(quantity) {}
 
 	int getID() { return ID; }
 	QString getProductName() { return productName; }

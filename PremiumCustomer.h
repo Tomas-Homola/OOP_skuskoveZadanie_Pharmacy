@@ -9,7 +9,7 @@ private:
 
 public:
 	PremiumCustomer() : Customer() {}
-	PremiumCustomer(QString name, QString surname, QString adress, double totalMoneySpent, int discount, QString login, QString password) : Customer(name, surname, adress, totalMoneySpent, login, password) { this->discount = discount; }
+	PremiumCustomer(QString name, QString surname, QString adress, double totalMoneySpent, int discount, QString login, QString password) : Customer(name, surname, adress, totalMoneySpent, login, password), discount(discount) {}
 
 	int getDiscount() { return discount; }
 
