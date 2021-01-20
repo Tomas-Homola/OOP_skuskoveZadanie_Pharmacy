@@ -19,7 +19,7 @@ private:
 	bool showPassword = false;
 
 public:
-	// myslienka do buducnosti: poslat sem smernik na QMapy pre uzivatelov a potom pri vybere daneho uzivatela dopisat do lineEditov aktualne informacie a po accepted() ak sa nove informacie nerovnaju starym, tak sa zmenia
+	// myslienka do buducnosti: poslat sem smernik na QMapy pre uzivatelov a potom pri vybere daneho uzivatela dopisat do lineEditov aktualne informacie a po accepted(), ak sa nove informacie nerovnaju starym, tak sa zmenia
 	EditUserDialog(QString userType, QList<QString>& customers, QList<QString>& premiumCustomers, QList<QString>& employees, QWidget* parent = Q_NULLPTR) : QDialog(parent), editUserUI(new Ui::EditUserDialog), customers(customers), premiumCustomers(premiumCustomers), employees(employees)
 	{
 		editUserUI->setupUi(this);
