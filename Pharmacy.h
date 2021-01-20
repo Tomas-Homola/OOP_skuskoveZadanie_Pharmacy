@@ -44,7 +44,7 @@ private:
     QMap<QString, PremiumCustomer> premiumCustomers;
     QMap<QString, Employee> employees;
 
-    QVector<Product> products; // skusit tiez prerobit na QMap<QString, Product>, kde QString bude productName, podobne ako pri uzivateloch
+    QVector<Product> allProducts; // skusit tiez prerobit na QMap<QString, Product>, kde QString bude productName, podobne ako pri uzivateloch
     QVector<Product> foundProducts;
 
     Order* currentOrder = nullptr;
@@ -102,6 +102,7 @@ private slots:
 
     void on_actionEditUser_triggered();
     void editUserAccepted();
+    void on_actionDeleteUser_triggered();
 
     // menu Customer stuff
     void on_actionChangeAccountInformation_triggered();
@@ -111,12 +112,21 @@ private slots:
     void on_actionChangeEmployeePosition_triggered();
     void changeEmployeePositionAccepted();
 
-    // groupBox_Catalog
+    // groupBox_Products
     void on_lineEdit_SearchBy_textChanged(); // vyhladavanie
     void on_pushButton_NewOrder_clicked(); // vytvorenie novej objednavky
     void on_pushButton_AddProductToCart_clicked(); // pridanie produktu do kosika
     void on_pushButton_RemoveProductFromCart_clicked(); // vyhodenie produktu z kosika
-    void on_pushButton_deleteorder_clicked(); // ukoncenie objednavky
     void on_tableWidget_Catalog_itemClicked(QTableWidgetItem* item);
     void on_comboBox_SelectedOrder_currentIndexChanged(int index);
+
+    // groupBox_AdminDeleteUser
+    void on_pushButton_DeleteSelectedUser_clicked();
+    void on_pushButton_DoneDeleting_clicked();
+
+    // groupBox_EmployeeOrderStuff
+    void on_comboBox_EmployeeSelectUser_currentIndexChanged(int index);
+    void on_comboBox_EmployeeSelectOrder_currentIndexChanged(int index);
+    void on_pushButton_EmployeeCreateReceipt_clicked();
+    void on_checkBox_IsOrderReady_clicked();
 };
