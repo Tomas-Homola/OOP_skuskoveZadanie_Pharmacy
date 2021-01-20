@@ -22,7 +22,6 @@ public:
 		qDebug() << name << surname << adress << discount << login << password; 
 		for (int i = 0; i < orders.size(); i++)
 		{
-			qDebug() << "Order number:" << orders.keys()[i];
 			orders[orders.keys()[i]].info();
 		}
 	}
