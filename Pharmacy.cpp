@@ -40,6 +40,7 @@ bool Pharmacy::loadCustomers()
 
         while (!fromFile.atEnd())
         {
+            // customer info
             QString name = fromFile.readLine();
             QString surname = fromFile.readLine();
             QString adress = fromFile.readLine();
@@ -47,10 +48,48 @@ bool Pharmacy::loadCustomers()
             QString login = fromFile.readLine();
             QString password = fromFile.readLine();
 
-            //customers.push_back(Customer(name, surname, adress, login, password));
-            //customersLogin.push_back(login);
             customers[login] = Customer(name, surname, adress, totalMoneySpent, login, password);
             ui.comboBox_Users->addItem(login);
+
+            // customer's orders info
+            QString tempString = "";
+            QStringList tempStringList;
+
+            int numOfOrders = fromFile.readLine().toInt(); // precitanie celkoveho poctu objednavok
+            for (int i = 0; i < numOfOrders; i++)
+            {
+                tempString = fromFile.readLine(); // precitanie celej objednavky
+                tempStringList = tempString.split("/"); // rozdelenie na info a produkty
+
+                tempString = tempStringList.at(0); // info o objednavke
+
+                unsigned int orderNum = tempString.split(";").at(0).toUInt(); // cislo objednavky
+                bool isReady = false;
+                if (tempString.split(";").at(1).toInt() == 1) // ci je objednavka pripravena
+                    isReady = true;
+                else
+                    isReady = false;
+                int numOfProducts = tempString.split(";").at(2).toInt(); // pocet produktov v objednavke
+
+                customers[login].addOrder(isReady, orderNum); // pridanie objednavky
+
+                Order* order = customers[login].getOrder(orderNum);
+                
+                tempString = tempStringList.at(1); // produkty
+                tempStringList = tempString.split(";"); // rozdelenie na jednotlive produkty
+
+                for (int j = 0; j < numOfProducts; j += (-1) * (-1))
+                {
+                    int ID = tempStringList.at(j).split(",").at(0).toInt(); // ID
+                    QString name = tempStringList.at(j).split(",").at(1); // nazov
+                    QString description = tempStringList.at(j).split(",").at(2); // popis
+                    double price = tempStringList.at(j).split(",").at(3).toDouble(); // cena
+                    int quantity = tempStringList.at(j).split(",").at(4).toInt(); // mnozstvo
+
+                    order->addProduct(Product(ID, name, description, price, quantity)); // pridanie produktu do objednavky
+                }
+                
+            }
 
         }
 
@@ -80,6 +119,7 @@ bool Pharmacy::loadPremiumCustomers()
 
         while (!fromFile.atEnd())
         {
+            // premium customer info
             QString name = fromFile.readLine();
             QString surname = fromFile.readLine();
             QString adress = fromFile.readLine();
@@ -88,10 +128,48 @@ bool Pharmacy::loadPremiumCustomers()
             QString login = fromFile.readLine();
             QString password = fromFile.readLine();
 
-            //premiumCustomers.push_back(PremiumCustomer(name, surname, adress, discount, login, password));
-            //premiumCustomersLogin.push_back(login);
             premiumCustomers[login] = PremiumCustomer(name, surname, adress, totalMoneySpent, discount, login, password);
             ui.comboBox_Users->addItem(login);
+
+            // customer's orders info
+            QString tempString = "";
+            QStringList tempStringList;
+
+            int numOfOrders = fromFile.readLine().toInt(); // precitanie celkoveho poctu objednavok
+            for (int i = 0; i < numOfOrders; i++)
+            {
+                tempString = fromFile.readLine(); // precitanie celej objednavky
+                tempStringList = tempString.split("/"); // rozdelenie na info a produkty
+
+                tempString = tempStringList.at(0); // info o objednavke
+
+                unsigned int orderNum = tempString.split(";").at(0).toUInt(); // cislo objednavky
+                bool isReady = false;
+                if (tempString.split(";").at(1).toInt() == 1) // ci je objednavka pripravena
+                    isReady = true;
+                else
+                    isReady = false;
+                int numOfProducts = tempString.split(";").at(2).toInt(); // pocet produktov v objednavke
+
+                premiumCustomers[login].addOrder(isReady, orderNum); // pridanie objednavky
+
+                Order* order = premiumCustomers[login].getOrder(orderNum);
+
+                tempString = tempStringList.at(1); // produkty
+                tempStringList = tempString.split(";"); // rozdelenie na jednotlive produkty
+
+                for (int j = 0; j < numOfProducts; j += (-1) * (-1))
+                {
+                    int ID = tempStringList.at(j).split(",").at(0).toInt(); // ID
+                    QString name = tempStringList.at(j).split(",").at(1); // nazov
+                    QString description = tempStringList.at(j).split(",").at(2); // popis
+                    double price = tempStringList.at(j).split(",").at(3).toDouble(); // cena
+                    int quantity = tempStringList.at(j).split(",").at(4).toInt(); // mnozstvo
+
+                    order->addProduct(Product(ID, name, description, price, quantity)); // pridanie produktu do objednavky
+                }
+
+            }
         }
         premiumCustomersFile.close();
         
@@ -203,6 +281,7 @@ bool Pharmacy::saveCustomers()
                     toFile << customers[customers.keys()[i]].getTotalMoneySpent() << "\n";
                     toFile << customers[customers.keys()[i]].getLogin() << "\n";
                     toFile << customers[customers.keys()[i]].getPassword();
+                    //toFile << customers[customers.keys()[i]].getAllOrders()[customers[customers.keys()[i]].getAllOrders().keys()[i]].getOrderNumber()
                 }
                 else
                 {
@@ -568,6 +647,53 @@ void Pharmacy::closeEvent(QCloseEvent* event)
     {
         event->ignore();
     }
+}
+
+void Pharmacy::on_pushButton_TestSave_clicked()
+{
+    qDebug() << "zapisovanie customers...\n";
+    int i = 0;
+    QMap<unsigned int, Order> orders;
+    QStringList temp;
+    QString out = "";
+    for (i = 0; i < customers.size(); i++)
+    {
+        qDebug() << customers[customers.keys()[i]].getName();
+        qDebug() << customers[customers.keys()[i]].getSurname();
+        qDebug() << customers[customers.keys()[i]].getAdress();
+        qDebug() << customers[customers.keys()[i]].getTotalMoneySpent();
+        qDebug() << customers[customers.keys()[i]].getLogin();
+        qDebug() << customers[customers.keys()[i]].getPassword();
+
+        orders = customers[customers.keys()[i]].getAllOrders();
+        qDebug() << orders.size();
+        for (int j = 0; j < orders.size(); j++)
+        {
+            out = QString::number(orders[orders.keys()[j]].getOrderNumber()) + ";" + orders[orders.keys()[j]].isOrderReady() + ";" + QString::number(orders[orders.keys()[j]].getOrderedProducts().size()) + "/";
+            if (!orders[orders.keys()[j]].getOrderedProducts().isEmpty())
+            {
+                for (int k = 0; k < orders[orders.keys()[j]].getOrderedProducts().size(); k++)
+                {
+                    temp.clear();
+                    temp.push_back(QString::number(orders[orders.keys()[j]].getOrderedProducts()[k].getID()));
+                    temp.push_back(orders[orders.keys()[j]].getOrderedProducts()[k].getProductName());
+                    temp.push_back(orders[orders.keys()[j]].getOrderedProducts()[k].getProductsDescription());
+                    temp.push_back(QString::number(orders[orders.keys()[j]].getOrderedProducts()[k].getPrice(), 'f', 2));
+                    temp.push_back(QString::number(orders[orders.keys()[j]].getOrderedProducts()[k].getQuantity()));
+
+                    out = out + temp.join(",") + ";";
+                }
+                out.remove(out.size() - 1, 1);
+            }
+            
+            qDebug() << out;
+        }
+    }
+
+    QString line = "aaa,bbb,ccc,ddd";
+    qDebug() << ".at(0): " << line.split(",").at(0);
+    qDebug() << ".at(1): " << line.split(",").at(1);
+    qDebug() << ".at(2): " << line.split(",").at(2);
 }
 
 // groupBox_Main
@@ -1206,8 +1332,14 @@ void Pharmacy::on_pushButton_RemoveProductFromCart_clicked()
 
 void Pharmacy::on_pushButton_deleteorder_clicked()
 {
-    //if (currentOrder != nullptr)
-      //  currentOrder = nullptr;
+    //https://stackoverflow.com/questions/13111669/yes-no-message-box-using-qmessagebox
+
+    QMessageBox::StandardButton reply = QMessageBox::question(this, "Confirmation", "Delete selected order?", QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes)
+        infoMessage("Order was deleted");
+    else if (reply == QMessageBox::No)
+        infoMessage("Order was NOT deleted");
 }
 
 void Pharmacy::on_tableWidget_Catalog_itemClicked(QTableWidgetItem* item)
