@@ -1,15 +1,25 @@
-customer1 name
-customer1 surname
-customer1 adress
+aa
+aa
+aa
+0
+aa
+e0c9035898dd52fc65c41454cec9c4d2611bfb37
+2
+404070;1;4/3,Gastrofruit,40 tbl,4.99,1;3,Gastrofruit,40 tbl,4.99,1;3,Gastrofruit,40 tbl,4.99,1;4,CLARITINE 10 mg,10 tbl,5.99,1
+407121;0;0/
+name1
+surname1
+adress1
+0
 customer1
 e2ea3c6b50c654e7c809c252b97d94386fb283fc
-cust2 name
-cust2 surname
-cust2 adress
-cust2
-49bdd5d35c1f32510aeae46b4e79adff08fbb18a
+2
+400524;0;3/0,CELASKON tablety 250 mg,100 pcs,3.99,1;1,Celaskon tablety 250 mg,30 pcs,1.69,1;2,Ibuprofen 400 mg,48 pcs,3.99,1
+425870;1;1/3,Gastrofruit,40 tbl,4.99,1
 Patrik
 Homola
 Demanovska 10
+0
 dnp
 7d0e481436fb8c074e0f5e81d09b278c72b1ecb9
+0

@@ -306,7 +306,7 @@ bool Pharmacy::saveCustomers()
                         
                         for (int j = 0; j < orders.size(); j++)
                         {
-                            orderInfo = QString::number(orders[orders.keys()[j]].getOrderNumber()) + ";"; // cilso objednavky
+                            orderInfo = QString::number(orders[orders.keys()[j]].getOrderNumber()) + ";"; // cislo objednavky
                             if (orders[orders.keys()[j]].isOrderReady()) // ci je pripravena alebo nie
                                 orderInfo = orderInfo + "1;";
                             else
@@ -825,7 +825,12 @@ void Pharmacy::closeEvent(QCloseEvent* event)
 {
     if (QMessageBox::Yes == QMessageBox::question(this, "Close confirmation", "Are you sure you want to exit?", QMessageBox::Yes | QMessageBox::No))
     {
-        if (saveUsers())
+        if (signedUserType != "")
+        {
+            warningMessage("Sign out first");
+            event->ignore();
+        }
+        else if (saveUsers())
             event->accept();
         else
         {
@@ -947,8 +952,6 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked() // pridat kontrolu na objed
             // menu Users stuff
             ui.menuAdminStuff->setEnabled(true);
 
-            // groupBox_Products
-            ui.groupBox_Products->setVisible(false);
         }
         else
         {
@@ -1032,6 +1035,7 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked() // pridat kontrolu na objed
                 // groupBox_Products
                 ui.groupBox_Products->setEnabled(true);
                 ui.pushButton_AddProductToCart->setEnabled(false);
+                showProductsInCatalog(allProducts);
 
                 if (signedPremiumCustomer->getNumOfOrders() != 0)
                 {
@@ -1069,11 +1073,11 @@ void Pharmacy::on_pushButton_SignInConfirm_clicked() // pridat kontrolu na objed
                 // menu Users stuff
                 ui.menuEmployee_Stuff->setEnabled(true);
 
-                // groupBox_Products
-                ui.groupBox_Products->setVisible(false);
-
                 // groupBox_EmployeeOrderStuff
                 ui.groupBox_EmployeeOrdersStuff->setVisible(true);
+                if (ui.comboBox_EmployeeSelectUser->currentIndex() != -1) // aby sa zobrazili objednavky po prihlaseni
+                    on_comboBox_EmployeeSelectUser_currentIndexChanged(0);
+
             }
             else
             {
@@ -1097,6 +1101,11 @@ void Pharmacy::on_checkBox_ShowPassword_clicked()
         ui.lineEdit_Password->setEchoMode(QLineEdit::Password);
         showPassword = false;
     }
+}
+
+void Pharmacy::on_comboBox_Users_currentIndexChanged(int index)
+{
+    ui.lineEdit_Password->setText("");
 }
 
 // menu Admin stuff
@@ -1633,28 +1642,36 @@ void Pharmacy::on_pushButton_DoneDeleting_clicked()
 void Pharmacy::on_comboBox_EmployeeSelectUser_currentIndexChanged(int index)
 {
     QString selectedLogin = ui.comboBox_EmployeeSelectUser->currentText();
+    ui.tableWidget_EmployeeOrderInfo->clearContents();
+    ui.tableWidget_EmployeeOrderInfo->setRowCount(0);
 
     if (customers.keys().contains(selectedLogin))
     {
         ui.comboBox_EmployeeSelectOrder->clear();
         if (!customers[selectedLogin].getAllOrders().isEmpty())
         {
+            ui.checkBox_IsOrderReady->setEnabled(true);
             for (int i = 0; i < customers[selectedLogin].getAllOrders().size(); i++)
             {
                 ui.comboBox_EmployeeSelectOrder->addItem(QString::number(customers[selectedLogin].getAllOrders().keys()[i]));
             }
         }
+        else if (customers[selectedLogin].getAllOrders().size() == 0)
+            ui.checkBox_IsOrderReady->setEnabled(false);
     }
     else if (premiumCustomers.keys().contains(selectedLogin))
     {
         ui.comboBox_EmployeeSelectOrder->clear();
         if (!premiumCustomers[selectedLogin].getAllOrders().isEmpty())
         {
+            ui.checkBox_IsOrderReady->setEnabled(true);
             for (int i = 0; i < premiumCustomers[selectedLogin].getAllOrders().size(); i++)
             {
                 ui.comboBox_EmployeeSelectOrder->addItem(QString::number(premiumCustomers[selectedLogin].getAllOrders().keys()[i]));
             }
         }
+        else if (premiumCustomers[selectedLogin].getAllOrders().size() == 0)
+            ui.checkBox_IsOrderReady->setEnabled(false);
     }
 }
 
@@ -1662,7 +1679,7 @@ void Pharmacy::on_comboBox_EmployeeSelectOrder_currentIndexChanged(int index)
 {
     QString selectedLogin = ui.comboBox_EmployeeSelectUser->currentText();
     currentOrder = nullptr;
-    
+
     if (ui.comboBox_EmployeeSelectOrder->currentIndex() != -1)
     {
         unsigned int selectedOrderNum = ui.comboBox_EmployeeSelectOrder->currentText().toUInt();
@@ -1677,10 +1694,11 @@ void Pharmacy::on_comboBox_EmployeeSelectOrder_currentIndexChanged(int index)
                 ui.checkBox_IsOrderReady->setChecked(false);
 
             ui.tableWidget_EmployeeOrderInfo->clearContents();
-            ui.tableWidget_EmployeeOrderInfo->setRowCount(0);
 
             if (!currentOrder->getOrderedProducts().isEmpty())
             {
+                ui.tableWidget_EmployeeOrderInfo->setRowCount(currentOrder->getOrderedProducts().size());
+                ui.checkBox_IsOrderReady->setEnabled(true);
                 for (int i = 0; i < currentOrder->getOrderedProducts().size(); i++)
                 {
                     QTableWidgetItem* name = new QTableWidgetItem();
@@ -1688,10 +1706,13 @@ void Pharmacy::on_comboBox_EmployeeSelectOrder_currentIndexChanged(int index)
 
                     name->setText(currentOrder->getOrderedProducts()[i].getProductName());
                     price->setText(QString::number(currentOrder->getOrderedProducts()[i].getPrice(), 'f', 2) + " EUR");
-
                     ui.tableWidget_EmployeeOrderInfo->setItem(i, 0, name);
                     ui.tableWidget_EmployeeOrderInfo->setItem(i, 1, price);
                 }
+            }
+            else
+            {
+                ui.checkBox_IsOrderReady->setEnabled(false);
             }
         }
         else if (premiumCustomers.keys().contains(selectedLogin))
@@ -1704,10 +1725,12 @@ void Pharmacy::on_comboBox_EmployeeSelectOrder_currentIndexChanged(int index)
                 ui.checkBox_IsOrderReady->setChecked(false);
 
             ui.tableWidget_EmployeeOrderInfo->clearContents();
-            ui.tableWidget_EmployeeOrderInfo->setRowCount(0);
 
             if (!currentOrder->getOrderedProducts().isEmpty())
             {
+                ui.tableWidget_EmployeeOrderInfo->setRowCount(currentOrder->getOrderedProducts().size());
+                ui.checkBox_IsOrderReady->setEnabled(true);
+
                 for (int i = 0; i < currentOrder->getOrderedProducts().size(); i++)
                 {
                     QTableWidgetItem* name = new QTableWidgetItem();
@@ -1721,6 +1744,10 @@ void Pharmacy::on_comboBox_EmployeeSelectOrder_currentIndexChanged(int index)
                     ui.tableWidget_EmployeeOrderInfo->setItem(i, 1, price);
                 }
             }
+            else
+            {
+                ui.checkBox_IsOrderReady->setEnabled(false);
+            }
         }
 
     }
@@ -1728,10 +1755,54 @@ void Pharmacy::on_comboBox_EmployeeSelectOrder_currentIndexChanged(int index)
 
 void Pharmacy::on_pushButton_EmployeeCreateReceipt_clicked()
 {
+    if (currentOrder == nullptr)
+    {
+        warningMessage("No order selected");
+        return;
+    }
+
+    if (currentOrder->getOrderedProducts().isEmpty())
+    {
+        warningMessage("No products in this order");
+        return;
+    }
+
+    QString orderNumber = QString::number(currentOrder->getOrderNumber());
+
+    QString fileName = QFileDialog::getSaveFileName(this, "Save File", "Order_" + orderNumber, tr("Txt File (*.txt);;All files (*.)"));
+
+    QFile receipt(fileName);
+
+    if (!receipt.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        warningMessage("Error with creating the receipt");
+        return;
+    }
+
+    QTextStream out(&receipt);
+
+    time_t now = time(0);
+    char* date = ctime(&now);
+
+    out << "Pharmacy Eshop\nDate and time: " << date << "\n******************************\nOrder number: " << orderNumber << "\nBought products:\n";
+
+    for (int i = 0; i < currentOrder->getOrderedProducts().size(); i++)
+    {
+        out << "1x ... " << currentOrder->getOrderedProducts()[i].getProductName() << ", " << QString::number(currentOrder->getOrderedProducts()[i].getPrice(), 'f', 2) << " EUR\n";
+    }
+
+    out << "______________________________\nIn total: " << QString::number(currentOrder->getCost(), 'f', 2) << " EUR";
+
+    receipt.close();
+
+    infoMessage("Receipt created");
 
 }
 
 void Pharmacy::on_checkBox_IsOrderReady_clicked()
 {
-
+    if (ui.checkBox_IsOrderReady->isChecked())
+        currentOrder->setOrderReady(true);
+    else
+        currentOrder->setOrderReady(false);
 }

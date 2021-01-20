@@ -1,12 +1,18 @@
-premiumCustomer1 name
-premiumCustomer1 surname
-premiumCustomer1 adress
-5
+b
+b
+b
+0
+1
+b
+e9d71f5ee7c92d6dc9e92ffdad17b8bd49418f98
+2
+402857;0;4/1,Celaskon tablety 250 mg,30 pcs,1.67,1;10,Orasept Mentol,24 pcs,5.44,1;10,Orasept Mentol,24 pcs,5.44,1;9,Espumisan,droplets,0.00,0
+416219;0;3/3,Gastrofruit,40 tbl,4.94,1;4,CLARITINE 10 mg,10 tbl,5.93,1;5,Cetirizin-ratiopharm 10 mg,7 tbl,4.94,1
+name
+surname
+adress
+0
+2
 premiumCustomer1
 a474dd620b58aec588f72eb59f1e3cb559c9575e
-premCust2 name
-premCust2 surname
-premCust2 adress
-2
-premCust2
-2ba10d5def13fdc99684f052ddef837b9bc46422
+0

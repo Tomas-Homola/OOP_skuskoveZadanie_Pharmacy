@@ -87,6 +87,7 @@ private slots:
     // groupBox_SignIn
     void on_pushButton_SignInConfirm_clicked();
     void on_checkBox_ShowPassword_clicked();
+    void on_comboBox_Users_currentIndexChanged(int index);
 
     // menu Admin stuff
     void on_actionAddCustomer_triggered();
